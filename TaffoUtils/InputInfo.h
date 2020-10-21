@@ -169,15 +169,16 @@ struct InputInfo : public MDInfo {
   std::shared_ptr<double> IError;
   bool IEnableConversion;
   bool IFinal;
+  int skippedBits;
 
   InputInfo()
-    : MDInfo(K_Field), IType(nullptr), IRange(nullptr), IError(nullptr), IEnableConversion(false), IFinal(false) {}
+    : MDInfo(K_Field), IType(nullptr), IRange(nullptr), IError(nullptr), IEnableConversion(false), IFinal(false), skippedBits(0) {}
 
   InputInfo(std::shared_ptr<TType> T, std::shared_ptr<Range> R, std::shared_ptr<double> Error)
-    : MDInfo(K_Field), IType(T), IRange(R), IError(Error), IEnableConversion(false), IFinal(false) {}
+    : MDInfo(K_Field), IType(T), IRange(R), IError(Error), IEnableConversion(false), IFinal(false), skippedBits(0){}
 
   InputInfo(std::shared_ptr<TType> T, std::shared_ptr<Range> R, std::shared_ptr<double> Error, bool EnC, bool IsFinal = false)
-    : MDInfo(K_Field), IType(T), IRange(R), IError(Error), IEnableConversion(EnC), IFinal(IsFinal) {}
+    : MDInfo(K_Field), IType(T), IRange(R), IError(Error), IEnableConversion(EnC), IFinal(IsFinal), skippedBits(0) {}
 
   virtual MDInfo *clone() const override {
     std::shared_ptr<TType> NewIType(IType.get() ? IType->clone() : nullptr);
