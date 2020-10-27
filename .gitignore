@@ -1,6 +1,7 @@
-#Discarded Folders
+# Discarded Folders
 build/
 .vscode/
 
-
+# Discarded Files
+*.ll
 

@@ -12,7 +12,10 @@ using namespace llvm;
 using namespace taffo;
 
 /**
- *  Read the annotations inside the module and add them to the map res, finally delete all the attributes 
+ * For each function in the module read all the local annotations contained inside and insert them in the map containing all the annotations.
+ * Finally remove the annotations from each function.
+ * @param m main llvm module
+ * @param annotations map containing all the annotations of all the functions 
  **/
 void Initialization::readAllLocalAnnotations(llvm::Module &m, MultiValueMap<llvm::Value *, ValueInfo>& annotations){
     for(Function &f: m.functions()){
@@ -23,22 +26,23 @@ void Initialization::readAllLocalAnnotations(llvm::Module &m, MultiValueMap<llvm
     }   
 }
 
-void Initialization::readLocalAnnotations(llvm::Function &f, MultiValueMap<llvm::Value *, ValueInfo>& annotation){
-    
+/**
+ * Read all the annotations contained in a function, first scan all the calling instructions and then find the llvm annotations. Finally add the annotation 
+ * inside the annotations' map.
+ * @param f function to be scan
+ * @param annotations map containing all the annotations of all the functions
+ **/
+void Initialization::readLocalAnnotations(llvm::Function &f, MultiValueMap<llvm::Value *, ValueInfo>& annotations){   
     for(inst_iterator iIt = inst_begin(&f), iItEnd = inst_end(&f); iIt != iItEnd; iIt++) 
         if(CallInst *call = dyn_cast<CallInst>(&(*iIt))){
             if(!call -> getCalledFunction())
                 continue;
             if(call -> getCalledFunction() -> getName() == "llvm.var.annotation")
-                parseAnnotation(annotation, cast<ConstantExpr>(iIt -> getOperand(1)), iIt -> getOperand(0));       
+                parseAnnotation(annotations, cast<ConstantExpr>(iIt -> getOperand(1)), iIt -> getOperand(0));       
         }    
 }
 
-void Initialization::parseAnnotation(MultiValueMap<llvm::Value *, ValueInfo>& annotation, ConstantExpr *annotationPtrInst, Value *instr){
-    ValueInfo vi;
-
-    if(!(annotationPtrInst -> getOpcode() == Instruction::GetElementPtr)) 
-        return;
+void Initialization::parseAnnotation(MultiValueMap<llvm::Value *, ValueInfo>& annotation, ConstantExpr *annotationPtrInst, llvm::Value *instr){
     GlobalVariable *annotationContent = dyn_cast<GlobalVariable>(annotationPtrInst -> getOperand(0));
     if(!annotationContent)
         return;
@@ -53,10 +57,10 @@ void Initialization::parseAnnotation(MultiValueMap<llvm::Value *, ValueInfo>& an
     if(!parser.parseAnnotationString(annStr)){
         errs() << "TAFFO annotation parser syntax error: \n";
         errs() << " In annotation: \"" << annStr << "\"\n";
-        errs() << " " << parser.lastError() << "\n";
         return;
     }
 
+    ValueInfo vi;
     vi.metadata = parser.metadata;
 
     if(Instruction *toconv = dyn_cast<Instruction>(instr))
@@ -70,4 +74,5 @@ void Initialization::parseAnnotation(MultiValueMap<llvm::Value *, ValueInfo>& an
             }
         }else
             annotation.push_back(instr, vi);
+    
 }

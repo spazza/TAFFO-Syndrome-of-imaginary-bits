@@ -23,7 +23,7 @@ static RegisterPass<Initialization> X("Initialization", "Initialization pass", f
 
 bool Initialization::runOnModule(llvm::Module &m) {
     LLVM_DEBUG(dbgs() << " ----- INITIALIZATION PASS ----- \n");
-
+    
     MultiValueMap<llvm::Value *, ValueInfo> localAnnotations;
     
     readAllLocalAnnotations(m, localAnnotations);
@@ -35,15 +35,19 @@ bool Initialization::runOnModule(llvm::Module &m) {
       setMetadataOfValue(V -> first, V -> second); 
     
     removeAnnotationCalls(vals);
-    
 
+    for(Function &f: m.functions())
+      for(inst_iterator iIt = inst_begin(&f), iItEnd = inst_end(&f); iIt != iItEnd; iIt++) 
+        if(f.getName() == "main")
+          errs() << *iIt << "\n";
+    /*
     for(auto v: vals){
       std::shared_ptr<mdutils::MDInfo> md = v -> second.metadata;
       if(Instruction *inst = dyn_cast<Instruction>(v -> first))
         if(mdutils::MDInfo *ii = dyn_cast<mdutils::InputInfo>(md.get()))
           LLVM_DEBUG(dbgs() << "Data: " << v -> first -> getName() << " , " << ii -> toString() << "\n");
     }
-    
+    */
     LLVM_DEBUG(dbgs() << " ----- END OF INIT PASS ----- \n\n");
 
     return true;
@@ -52,8 +56,8 @@ bool Initialization::runOnModule(llvm::Module &m) {
 void Initialization::setMetadataOfValue(llvm::Value *v, ValueInfo& vi){
     std::shared_ptr<mdutils::MDInfo> md = vi.metadata;
     if(Instruction *inst = dyn_cast<Instruction>(v)){
-        if(mdutils::InputInfo *ii = dyn_cast<mdutils::InputInfo>(md.get()))
-            mdutils::MetadataManager::setInputInfoMetadata(*inst, *ii);
+      if(mdutils::InputInfo *ii = dyn_cast<mdutils::InputInfo>(md.get()))
+        mdutils::MetadataManager::setInputInfoMetadata(*inst, *ii);
     }
 }
 
@@ -106,3 +110,4 @@ void Initialization::removeAnnotationCalls(MultiValueMap<llvm::Value *, ValueInf
     i++;
   }
 }
+

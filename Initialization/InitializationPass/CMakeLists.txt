@@ -4,6 +4,8 @@ add_llvm_library(InitializationPass MODULE
     AnnotationParser.h
     AnnotationParser.cpp
     Annotations.cpp
+    Conversion.h
+    Conversion.cpp
 
     PLUGIN_TOOL
     opt

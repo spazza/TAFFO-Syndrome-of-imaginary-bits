@@ -39,9 +39,7 @@ namespace taffo{
 
         void buildConversionQueueForRootValues(const MultiValueMap<llvm::Value *, ValueInfo>& val, MultiValueMap<llvm::Value *, ValueInfo>& queue);
         void setMetadataOfValue(llvm::Value *v, ValueInfo& vi);
-        void removeAnnotationCalls(MultiValueMap<llvm::Value *, ValueInfo>& q);
-
-        
+        void removeAnnotationCalls(MultiValueMap<llvm::Value *, ValueInfo>& q);     
     };
 }
 
