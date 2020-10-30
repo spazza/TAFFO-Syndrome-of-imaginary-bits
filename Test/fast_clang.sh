@@ -1,1 +1,0 @@
-clang++ -O3 -emit-llvm test_file.cpp -c -o test_file.bc

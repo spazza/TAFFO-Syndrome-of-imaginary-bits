@@ -7,7 +7,7 @@
 #ifndef __TAFFO_INITIALIZER_PASS_H__
 #define __TAFFO_INITIALIZER_PASS_H__
 
-#define DEBUG_TYPE "taffo-InitAndRange"
+#define DEBUG_TYPE "taffo-Syndrome-of-imaginary-bits-prototype"
 #define DEBUG_ANNOTATIONS "annotations"
 
 /* 
@@ -37,9 +37,12 @@ namespace taffo{
 
         bool parseAnnotationString(llvm::StringRef annString);
 
-        void buildConversionQueueForRootValues(const MultiValueMap<llvm::Value *, ValueInfo>& val, MultiValueMap<llvm::Value *, ValueInfo>& queue);
+        void propagateAnnotationsData(const MultiValueMap<llvm::Value *, ValueInfo>& val, MultiValueMap<llvm::Value *, ValueInfo>& queue);
+        void updateUserMetadata(std::shared_ptr<mdutils::MDInfo> &userMetadata, const std::shared_ptr<mdutils::MDInfo> &parentMetadata);
         void setMetadataOfValue(llvm::Value *v, ValueInfo& vi);
         void removeAnnotationCalls(MultiValueMap<llvm::Value *, ValueInfo>& q);     
+
+        void conversion(llvm::Module &m, MultiValueMap<llvm::Value *, ValueInfo> &annotatedInstructions);
     };
 }
 

@@ -1,9 +1,9 @@
 #include <iostream>
 
 int main(){
-    double a __attribute((annotate("strange-float 10 1.21e-330 3.05e-329")));
-    double b __attribute((annotate("strange-float 10 2.33e-335 6.04e-330")));
-    double c __attribute((annotate("strange-float 0 0.0005 0.01")));
+    double a __attribute((annotate("strange-float 8 0.00001 0.004")));
+    double b __attribute((annotate("strange-float 5 0.0000002 0.0001")));
+    double c;
 
     a = 1.05;
     b = 4.18;

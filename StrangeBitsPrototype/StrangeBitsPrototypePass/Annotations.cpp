@@ -65,14 +65,4 @@ void Initialization::parseAnnotation(MultiValueMap<llvm::Value *, ValueInfo>& an
 
     if(Instruction *toconv = dyn_cast<Instruction>(instr))
         annotation.push_back(toconv -> getOperand(0), vi);
-    else if(Function *fun = dyn_cast<Function>(instr)){
-            enabledFunctions.insert(fun);
-            for(auto user: fun -> users()){
-                if(!(isa<CallInst>(user) || isa<InvokeInst>(user)))
-                    continue;
-                annotation.push_back(user, vi);
-            }
-        }else
-            annotation.push_back(instr, vi);
-    
 }

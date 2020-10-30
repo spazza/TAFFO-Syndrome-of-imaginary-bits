@@ -111,7 +111,7 @@ public:
   static bool classof(const TType *T) { return T->getKind() == K_FPType; }
 protected:
   int Width; ///< Width of the format (in bits), negative if signed.
-  unsigned PointPos; ///< Number of fractional bits.
+  unsigned PointPos; ///< Number of fractional bits. 
 };
 
 struct Range {
@@ -180,11 +180,15 @@ struct InputInfo : public MDInfo {
   InputInfo(std::shared_ptr<TType> T, std::shared_ptr<Range> R, std::shared_ptr<double> Error, bool EnC, bool IsFinal = false)
     : MDInfo(K_Field), IType(T), IRange(R), IError(Error), IEnableConversion(EnC), IFinal(IsFinal), skippedBits(0) {}
 
+  InputInfo(std::shared_ptr<TType> T, std::shared_ptr<Range> R, std::shared_ptr<double> Error, int sBits, bool EnC, bool IsFinal = false)
+    : MDInfo(K_Field), IType(T), IRange(R), IError(Error), IEnableConversion(EnC), IFinal(IsFinal), skippedBits(sBits) {}
+
   virtual MDInfo *clone() const override {
     std::shared_ptr<TType> NewIType(IType.get() ? IType->clone() : nullptr);
     std::shared_ptr<Range> NewIRange(IRange.get() ? new Range(*IRange) : nullptr);
     std::shared_ptr<double> NewIError(IError.get() ? new double(*IError) : nullptr);
-    return new InputInfo(NewIType, NewIRange, NewIError, IEnableConversion, IFinal);
+
+    return new InputInfo(NewIType, NewIRange, NewIError, skippedBits, IEnableConversion, IFinal);
   }
 
   llvm::MDNode *toMetadata(llvm::LLVMContext &C) const override;
@@ -210,7 +214,7 @@ struct InputInfo : public MDInfo {
     }
     if (IRange.get()) {
       if (!first) sstm << " "; else first = false;
-      sstm << "range(" << IRange->Min << ", " << IRange->Max << ")";
+      sstm << "range(" << skippedBits << ", " << IRange->Min << ", " << IRange->Max << ")";
     }
     if (IError.get()) {
       if (!first) sstm << " ";
