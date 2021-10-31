@@ -12,6 +12,7 @@
 
 template <int16_t INT_BITS = 1, int16_t FRAC_BITS = 15>
 struct extended_fixed_point_t {
+
 	//---------------------------------------------------------------------------
 	// type definitions for internal data
 	//---------------------------------------------------------------------------
@@ -34,62 +35,83 @@ protected:
 private:
 	raw_t raw;
 
-	// With this new representation probably it has no sense due to the shift factor that deletes the value
-public:
-	static const raw_t one  = ((raw_t)1) << (FRAC_BITS > 0 ? FRAC_BITS : 0);
-	static const raw_t zero = ((raw_t)0) << (FRAC_BITS > 0 ? FRAC_BITS : 0);
-
+	static const raw_t raw_booster = ((raw_t)1) << (FRAC_BITS > 0 ? FRAC_BITS : 0);
 
 public:
+	// In case the comma is placed out of left it is necessary to retreive the correct value
+	uint32_t raw_helper = 0;
+
+public:
+
 	//---------------------------------------------------------------------------
 	// constructors
 	//---------------------------------------------------------------------------
-	// To be fixed, reduce the declaration
-	extended_fixed_point_t(const int8_t value)   : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const uint8_t value)  : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const int16_t value)  : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const uint16_t value) : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const int32_t value)  : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const uint32_t value) : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const int64_t value)  : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const uint64_t value) : raw(static_cast<raw_t>(value)) {
-		if(FRAC_BITS > 0)
-			this->raw <<= FRAC_BITS;
-	}
-	extended_fixed_point_t(const long double value) : raw((raw_t)(value * one)) {}
-	extended_fixed_point_t(const double value)      : raw((raw_t)(value * one)) {}
-	extended_fixed_point_t(const float value)       : raw((raw_t)(value * one)) {}
+
+	extended_fixed_point_t(const int8_t value)   : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const uint8_t value)  : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const int16_t value)  : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const uint16_t value) : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const int32_t value)  : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const uint32_t value) : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const int64_t value)  : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const uint64_t value) : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const long double value) : raw((raw_t)(value * raw_booster)) { raw_normalizer_float(); } 
+	extended_fixed_point_t(const double value)      : raw((raw_t)(value * raw_booster)) { raw_normalizer_float(); }
+	extended_fixed_point_t(const float value)       : raw((raw_t)(value * raw_booster)) { raw_normalizer_float(); }
 	#if _FIXED_POINT_REDEFINE_INT_TYPES_
-	extended_fixed_point_t(const int value)         : raw(static_cast<raw_t>(value)) {}
-	extended_fixed_point_t(const unsigned int value): raw(static_cast<raw_t>(value)) {}
+	extended_fixed_point_t(const int value)         : raw(static_cast<raw_t>(value)) { raw_normalizer(); }
+	extended_fixed_point_t(const unsigned int value): raw(static_cast<raw_t>(value)) { raw_normalizer(); }
 	#endif
 
 	explicit extended_fixed_point_t() : raw(0) {}
 
-	static this_t createRaw(raw_t data) {
+private:
+
+	//---------------------------------------------------------------------------
+	// normalization functions
+	//---------------------------------------------------------------------------
+
+	void raw_normalizer() {
+		if(integer_length >= 0 && fractional_length >= 0)
+			raw <<= fractional_length;
+		if(integer_length >= 0 && fractional_length < 0)
+			raw >>= abs(fractional_length);
+	}
+
+	void raw_normalizer_float() {
+		if(integer_length < 0 && fractional_length >= 0) 
+			raw <<= abs(integer_length);	
+	}
+
+	raw_t raw_denormalizer() const {
+		raw_t value = raw;
+
+		if(integer_length >= 0 && fractional_length >= 0)
+			value >>= fractional_length;
+	 	if(integer_length >= 0 && fractional_length < 0)
+			value <<= abs(fractional_length);	
+			
+		return static_cast<raw_t>(value);
+	}
+
+	template<typename T>
+	T raw_denormalizer_float() const {
+		raw_t value = raw;
+
+		if(integer_length >= 0 && fractional_length < 0)
+			value <<= abs(fractional_length);
+		if(integer_length < 0 && fractional_length >= 0) 
+			value >>= abs(integer_length) + raw_helper;
+
+		return static_cast<T>(value)/raw_booster;
+	}
+
+public:
+   
+	static this_t createRaw(raw_t data, int16_t raw_h) {
 		this_t val;
 		val.raw = data;
+		val.raw_helper = raw_h;
 		return val;
 	}
 
@@ -102,56 +124,30 @@ public:
 	//---------------------------------------------------------------------------
 public:
 
-	/*this_t convert() const {
+	this_t covert() const {
 		return *this;
-	}*/
+	}
 
-	/// Returns a new fixed-point in a new format which is similar in value to the original
-	/** This may result in loss of raw if the number of bits for either the
- 	* integer or fractional part are less than the original. 
-	 */
-	template <int16_t INT_BITS_NEW, int16_t FRAC_BITS_NEW>
-	extended_fixed_point_t<INT_BITS_NEW, FRAC_BITS_NEW> convert() {
+	template<int16_t INT_BITS_NEW, int16_t FRAC_BITS_NEW>
+	extended_fixed_point_t<INT_BITS_NEW, FRAC_BITS_NEW> convert() const {
 		typedef extended_fixed_point_t<INT_BITS_NEW, FRAC_BITS_NEW> target_t;
 		typedef typename target_t::raw_t target_raw_t;
-		typedef TypeConverter<raw_t, INT_BITS, FRAC_BITS, INT_BITS_NEW, FRAC_BITS_NEW> Converter;
-		Converter converter(raw);
 
-		return target_t::createRaw((target_raw_t)converter.convert());
-	}
+		uint16_t raw_h = raw_helper;
+		target_raw_t new_raw = convert_fixed_point<
+				raw_t,
+				target_raw_t,
+				INT_BITS,
+				FRAC_BITS,
+				INT_BITS_NEW,
+				FRAC_BITS_NEW,
+				INT_BITS      >= 0,
+				FRAC_BITS     >= 0,
+				INT_BITS_NEW  >= 0,
+				FRAC_BITS_NEW >= 0
+				>::exec(raw, raw_h);
 
-	//---------------------------------------------------------------------------
-	// arithmetic operators
-	//---------------------------------------------------------------------------
-public:
-	this_t operator+(const this_t& value) const {
-		return this_t::createRaw(this->getRaw() + value.getRaw());
-	}
-
-	template <int16_t INT_BITS2, int16_t FRAC_BITS2>
-	this_t operator+(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
-		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
-		return this_t::createRaw(this->getRaw() + op2.getRaw());
-
-		if(this->integer_length < 0 && value.integer_length < 0){
-			auto shift_factor = std::abs(this->integer_length - value.integer_length);
-			if(this->integer_length < value.integer_length) 
-				return this_t::createRaw(this->getRaw() + (value.getRaw() >> shift_factor));
-			else
-				return this_t::createRaw(this->getRaw() + (value.getRaw() << shift_factor));
-		}
-
-		if(this->integer_length >= 0 && value.integer_length < 0){
-			auto shift_factor = std::abs(value.integer_length);
-			return this_t::createRaw(this->getRaw() + (value.getRaw() << shift_factor));
-		}
-
-		if(this->integer_length < 0 && value.integer_length >= 0){
-			auto shift_factor = std::abs(this->integer_length);
-			return this_t::createRaw(this->getRaw() + (value.getRaw() >> shift_factor));
-		}
-
-		return this_t::createRaw(this->getRaw() + value.getRaw());
+		return target_t::createRaw(new_raw, raw_h);
 	}
 
 	//---------------------------------------------------------------------------
@@ -166,9 +162,9 @@ public:
 		float print_value;
 
 		if(INT_BITS < 0) 
-			print_value = static_cast<float>(static_cast<int64_t>(raw) >> std::abs(INT_BITS))/one; 
+			print_value = static_cast<float>(static_cast<int64_t>(raw) >> std::abs(INT_BITS))/raw_booster; 
 		else if(FRAC_BITS < 0)
-				print_value = static_cast<float>(static_cast<int64_t>(raw) << std::abs(FRAC_BITS))/one; 
+				print_value = static_cast<float>(static_cast<int64_t>(raw) << std::abs(FRAC_BITS))/raw_booster; 
 			else 
 				print_value = getValueF(); 
 
@@ -178,31 +174,25 @@ public:
 		return os;
 	}
 
+
 	//---------------------------------------------------------------------------
 	// accessors
 	//---------------------------------------------------------------------------
 
 	/// Get the value as a floating point
-	float getValueF() const { return static_cast<float>(raw)/one; }
+	float getValueF() const { return raw_denormalizer_float<float>(); }
 
 	/// Get the value as a floating point double precision
-	double getValueFD() const { return static_cast<double>(raw)/one; }
+	double getValueFD() const { return raw_denormalizer_float<double>(); }
 
 	/// Get the value as a floating point quadruple precision
-	long double getValueFLD() const { return static_cast<long double>(raw)/one; }
+	long double getValueFLD() const { return raw_denormalizer_float<long double>(); }
 
 	/// Get the value truncated to an integer
-	//raw_t getValue() const { return static_cast<raw_t>(raw >> FRAC_BITS); }
-
-	raw_t getValue() const { 
-		raw_t temp_raw = raw;
-		FRAC_BITS >= 0 ? temp_raw >>= FRAC_BITS : temp_raw <<= std::abs(FRAC_BITS);
-		return temp_raw;
-	}
+	raw_t getValue() const { return raw_denormalizer(); }
 
 	/// Get the closest integer value
 	raw_t round() const { return static_cast<raw_t>(round(getValueF())); }
-
 
 };
 

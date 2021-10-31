@@ -1,7 +1,9 @@
-#define BOOST_TEST_MODULE Sum_Test_8bit_equal_range
+//#define BOOST_TEST_MODULE Sum_Test_8bit_equal_range
 
 #include "extended_fixed_point.hpp"
 #include <iostream>
+
+#include <boost/test/unit_test.hpp>
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
@@ -13,6 +15,8 @@ void sum_only_integer_numbers(float v1, float v2);
 
 using namespace boost;
 namespace bdata = boost::unit_test::data;
+
+BOOST_AUTO_TEST_SUITE(Sum_test_8bit_equal_range)
 
 // Sum test for extended_fixed_point represented with int8_t 
 // Test of sum between extended_fixed_point with the same range
@@ -188,3 +192,5 @@ void sum_only_integer_numbers(float v1, float v2) {
     std::cout << (int16_t)v2 << " + " << (int16_t)v1 << " = " << test2 << "\n\n";
     BOOST_TEST(test2.getValueF() == correct_value);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
