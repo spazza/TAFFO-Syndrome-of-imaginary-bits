@@ -160,36 +160,71 @@ public:
 
 public:
 
-	this_t operator+(const this_t& value) const {
+	// Sum
+
+	this_t operator +(const this_t& value) const {
 		return this_t::createRaw(this->getRaw() + value.getRaw(), this->raw_helper);
 	}
 
-	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
-	this_t operator+(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
-		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
-		return this_t::createRaw(this->getRaw() + op2.getRaw(), this->raw_helper);
-	}
-
-	this_t& operator+=(const this_t& value) {
+	this_t& operator +=(const this_t& value) {
 		raw += value.getRaw();
 		return *this;
 	}
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
-	this_t& operator+=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) {
+	this_t operator +(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
+		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
+		return this_t::createRaw(this->getRaw() + op2.getRaw(), this->raw_helper);
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	this_t& operator +=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) {
 		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
 		return *this += op2;
 	}
 
 	template<typename other_t>
-	this_t operator+(const other_t& value) const {
+	this_t operator +(const other_t& value) const {
 		return *this + this_t(value);
 	}
 
 	template<typename other_t>
-	this_t& operator+=(const other_t& value) {
+	this_t& operator +=(const other_t& value) {
 		return *this += this_t(value);
 	}
+
+	// Difference
+
+	this_t operator -() const {
+		return this_t::createRaw(-raw, raw_helper);
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	this_t operator -(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
+		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
+		return this_t::createRaw(getRaw() - op2.getRaw(), raw_helper);
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	this_t operator -=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
+		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
+		raw -= op2.getRaw();
+		return *this;
+	}
+
+	template <typename other_t>
+	this_t operator -(const other_t& value) const {
+		return *this - this_t(value);
+	}
+
+	template <typename other_t>
+	this_t& operator -=(const other_t& value) {
+		return *this -= this_t(value);
+	}
+
+	// Multiplication
+
+	// Division
 
 	//---------------------------------------------------------------------------
 	// logic operators
@@ -197,21 +232,142 @@ public:
 
 public:
 
-	bool operator==(const this_t& value) const {
+	// Weaker logic operators because the operation is performed only with respect to the first value
+
+	// Equality
+
+	bool operator ==(const this_t& value) const {
 		return raw == value.getRaw();
 	}
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
-	bool operator==(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
-		typedef extended_fixed_point_t<INT_BITS2, FRAC_BITS2> other_t;
-		other_t this_converted = this->template convert<INT_BITS2, FRAC_BITS2>();
+	bool operator ==(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
 		extended_fixed_point_t other_converted = other.template convert<INT_BITS, FRAC_BITS>();
-		return (*this == other_converted && this_converted == other);
+		return (*this == other_converted);
 	}
 
 	template<typename other_t>
-	bool operator==(const other_t& other) const {
+	bool operator ==(const other_t& other) const {
 		return *this == this_t(other);
+	}
+
+	// Inequality
+
+	bool operator !=(const this_t& value) const {
+		return raw != value.getRaw();
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator !=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		return !(*this == other);
+	}
+
+	template<typename other_t>
+	bool operator != (const other_t& other) const {
+		return *this != this_t(other);
+	}
+
+	// Greater than
+
+	bool operator >(const this_t& value) const {
+		return raw > value.getRaw();
+	}
+
+	bool operator >=(const this_t& value) const {
+		return !(*this < value);
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator >(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		typedef extended_fixed_point_t<INT_BITS2, FRAC_BITS2> other_t;
+		other_t this_converted = this->template convert<INT_BITS2,FRAC_BITS2>();
+		this_t other_converted = other.template convert<INT_BITS,FRAC_BITS>();
+		bool res_1 = *this > other_converted && this_converted > other;
+
+		if (res_1) 
+			return true;
+		
+		bool res_2 = *this < other_converted && this_converted < other;
+		res_2 = res_2  || (*this == other_converted && this_converted == other);
+
+		if (res_2) 
+			return false;
+
+		if (INT_BITS > INT_BITS2) 
+			return *this > other_converted;
+		else if (INT_BITS > INT_BITS2) 
+			return this_converted > other;
+		else if (FRAC_BITS < FRAC_BITS2) 
+			return this_converted > other;
+		else 
+			return *this > other_converted;
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator >=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		return !(*this < other);
+	}
+
+	template<typename other_t>
+	bool operator >(const other_t& other) const {
+		return *this > this_t(other);
+	}
+
+	template<typename other_t>
+	bool operator >=(const other_t& other) const {
+		return *this >= this_t(other);
+	}
+
+	// Less than
+
+	bool operator <(const this_t& value) const {
+		return raw < value.getRaw();
+	}
+
+	bool operator <=(const this_t& value) const {
+		return !(*this > value);
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator <(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		typedef extended_fixed_point_t<INT_BITS2, FRAC_BITS2> other_t;
+		other_t this_converted = this->template convert<INT_BITS2,FRAC_BITS2>();
+		this_t other_converted = other.template convert<INT_BITS,FRAC_BITS>();
+		bool res_1 = *this < other_converted && this_converted < other;
+
+		if (res_1) 
+			return true;
+		
+		bool res_2 = *this > other_converted && this_converted > other;
+		res_2 = res_2  || (*this == other_converted && this_converted == other);
+
+		if (res_2) 
+			return false;
+		
+		if (INT_BITS > INT_BITS2) 
+			return *this < other_converted;
+		else if (INT_BITS > INT_BITS2) 
+			return this_converted < other;
+		else if (FRAC_BITS < FRAC_BITS2) 
+			return this_converted < other;
+		else 
+			return *this < other_converted;
+		
+	}
+
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator <=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		return !(*this > other);
+	}
+
+	template<typename other_t>
+	bool operator <(const other_t& other) const {
+		return *this < this_t(other);
+	}
+
+	template<typename other_t>
+	bool operator <=(const other_t& other) const {
+		return *this <= this_t(other);
 	}
 
 	//---------------------------------------------------------------------------

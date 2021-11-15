@@ -243,9 +243,6 @@ BOOST_DATA_TEST_CASE(Conversion_test_float_PPNP, bdata::make(test_float_PPNP_par
     extended_fixed_point_t<-2, 30> new_efp_first = curr_efp.template convert<-2, 30>();
 
     BOOST_TEST(std::abs(test_value - new_efp_first.getValueFD()) < TOLERANCE);
-
-    curr_efp.getValueFD();
-    new_efp_first.getValueFD();
 }
 
 // From INT_PART >= 0, FRAC_PART < 0 to INT_PART >= 0, FRAC_PART >= 0 - Integer values
