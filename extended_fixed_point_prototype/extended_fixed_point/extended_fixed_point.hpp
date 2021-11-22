@@ -279,6 +279,13 @@ public:
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	bool operator >(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		this_t other_converted = other.template convert<INT_BITS,FRAC_BITS>();
+		return *this > other_converted;
+	}
+
+/*
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator >(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
 		typedef extended_fixed_point_t<INT_BITS2, FRAC_BITS2> other_t;
 		other_t this_converted = this->template convert<INT_BITS2,FRAC_BITS2>();
 		this_t other_converted = other.template convert<INT_BITS,FRAC_BITS>();
@@ -301,7 +308,7 @@ public:
 			return this_converted > other;
 		else 
 			return *this > other_converted;
-	}
+	}*/
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	bool operator >=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
@@ -330,6 +337,12 @@ public:
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	bool operator <(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
+		this_t other_converted = other.template convert<INT_BITS,FRAC_BITS>();
+		return *this < other_converted;
+	}
+	/*
+	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
+	bool operator <(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
 		typedef extended_fixed_point_t<INT_BITS2, FRAC_BITS2> other_t;
 		other_t this_converted = this->template convert<INT_BITS2,FRAC_BITS2>();
 		this_t other_converted = other.template convert<INT_BITS,FRAC_BITS>();
@@ -353,7 +366,7 @@ public:
 		else 
 			return *this < other_converted;
 		
-	}
+	}*/
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	bool operator <=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& other) const {
