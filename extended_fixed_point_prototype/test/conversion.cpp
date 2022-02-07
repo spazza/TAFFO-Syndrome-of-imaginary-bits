@@ -239,10 +239,14 @@ const float test_float_PPNP_parameters[] = {// Corner case
 
 BOOST_DATA_TEST_CASE(Conversion_test_float_PPNP, bdata::make(test_float_PPNP_parameters), test_value) {
     const double TOLERANCE = 1e-9;
-    extended_fixed_point_t<4, 30> curr_efp(test_value);
-    extended_fixed_point_t<-2, 30> new_efp_first = curr_efp.template convert<-2, 30>();
+    extended_fixed_point_t<4, 66> curr_efp(test_value);
+    extended_fixed_point_t<-2, 66> new_efp_first = curr_efp.template convert<-2, 66>();
 
     BOOST_TEST(std::abs(test_value - new_efp_first.getValueFD()) < TOLERANCE);
+
+    extended_fixed_point_t<-4, 66> new_efp_second = curr_efp.template convert<-4, 66>();
+
+    BOOST_TEST(std::abs(test_value - new_efp_second.getValueFD()) < TOLERANCE);
 }
 
 // From INT_PART >= 0, FRAC_PART < 0 to INT_PART >= 0, FRAC_PART >= 0 - Integer values
@@ -305,9 +309,13 @@ const float test_float_NPPP_parameters[] = {// Corner case
 
 BOOST_DATA_TEST_CASE(Conversion_test_float_NPPP, bdata::make(test_float_NPPP_parameters), test_value) {
     const double TOLERANCE = 1e-9;
-    extended_fixed_point_t<2, 30> curr_efp(test_value);
-    extended_fixed_point_t<-2, 30> new_efp_first = curr_efp.template convert<-2, 30>();
+    extended_fixed_point_t<-2, 66> curr_efp(test_value);
+    extended_fixed_point_t<2, 66> new_efp_first = curr_efp.template convert<2, 66>();
 
     BOOST_TEST(std::abs(test_value - new_efp_first.getValueFD()) < TOLERANCE);
+
+    extended_fixed_point_t<4, 66> new_efp_second = curr_efp.template convert<4, 66>();
+
+    BOOST_TEST(std::abs(test_value - new_efp_second.getValueFD()) < TOLERANCE);
 }
 BOOST_AUTO_TEST_SUITE_END()

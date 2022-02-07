@@ -71,14 +71,14 @@ template <> struct get_int_with_length<65535> { typedef TooManyBits RESULT; };
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new, bool intPos, bool fracPos, bool intNewPos, bool fracNewPos>
 struct convert_fixed_point {
-	static dst_t exec(src_t src, uint16_t &raw_helper);
+	static dst_t exec(src_t src, uint16_t &raw_remainder);
 };
 
 // From (INT_BITS > 0, FRAC_BITS > 0) to (INT_BITS > 0, FRAC_BITS > 0)
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, true, true, true, true> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		if(frac_bits > frac_bits_new) {
 			src_t intermediate = src;
 			uint32_t sha = frac_bits - frac_bits_new;
@@ -97,7 +97,7 @@ struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, true, true, true, false> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		src_t intermediate = src;
 		uint32_t sha = frac_bits + abs(frac_bits_new);
 		intermediate >>= sha;
@@ -109,11 +109,11 @@ struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, true, true, false, true> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		dst_t intermediate = static_cast<dst_t>(src);
 		uint32_t sha = int_bits + abs(int_bits_new);
 		intermediate <<= sha;
-		raw_helper = int_bits;
+		raw_remainder = int_bits;
 		return intermediate;		
 	}
 };
@@ -122,7 +122,7 @@ struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, true, false, true, true> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		src_t intermediate = src;
 		uint32_t sha = abs(frac_bits) + frac_bits_new;
 		intermediate <<= sha;
@@ -134,7 +134,7 @@ struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, true, false, true, false> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		if(abs(frac_bits) > abs(frac_bits_new)) {
 			src_t intermediate = src;
 			uint32_t sha = abs(frac_bits) - abs(frac_bits_new);
@@ -153,10 +153,11 @@ struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, false, true, true, true> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		src_t intermediate = src;
 		uint32_t sha = abs(int_bits) + int_bits_new;
 		intermediate >>= sha;
+		raw_remainder = int_bits_new;
 		return static_cast<dst_t>(intermediate);		
 	}
 }; 
@@ -165,7 +166,7 @@ struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac
 
 template<typename src_t, typename dst_t, int16_t int_bits, int16_t frac_bits, int16_t int_bits_new, int16_t frac_bits_new>
 struct convert_fixed_point<src_t, dst_t, int_bits, frac_bits, int_bits_new, frac_bits_new, false, true, false, true> {
-	static dst_t exec(src_t src, uint16_t &raw_helper) {
+	static dst_t exec(src_t src, uint16_t &raw_remainder) {
 		if(abs(int_bits) > abs(int_bits_new)) {
 			src_t intermediate = src;
 			uint32_t sha = abs(int_bits) - abs(int_bits_new);
