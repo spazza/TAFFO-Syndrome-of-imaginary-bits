@@ -88,12 +88,16 @@ BOOST_DATA_TEST_CASE(Sum_integer_same_type, bdata::make(int_test_array_1) ^ bdat
 const float float_test_array_1[] = { // Corner case
                                      0.0,
                                      // Random values
-                                     29641.436951, 55892.721527, 47866.858734, 38982.110138, 11995.195908, 65018.022354, 47592.883682, 11232.018158, 733.179504, 17111.686813};
+                                     29641.436951, 55892.721527, 47866.858734, 38982.110138, 11995.195908, 65018.022354, 47592.883682, 11232.018158, 733.179504, 17111.686813,
+                                     // Random negative values
+                                     -29641.436951, -55892.721527, -47866.858734, -38982.110138, -11995.195908, -65018.022354, -47592.883682, -11232.018158, -733.179504, -17111.686813};
 
 const float float_test_array_2[] = { // Corner case
                                      0.0,
                                      // Random values
-                                     37758.218964, 11420.790100, 26159.802307, 12541.457916, 1756.990570, 23383.192383, 38275.851257, 59305.757507, 15270.562973, 14160.928177};
+                                     37758.218964, 11420.790100, 26159.802307, 12541.457916, 1756.990570, 23383.192383, 38275.851257, 59305.757507, 15270.562973, 14160.928177,
+                                     // Random negative values
+                                     -37758.218964, -11420.790100, -26159.802307, -12541.457916, -1756.990570, -23383.192383, -38275.851257, -59305.757507, -15270.562973, -14160.928177};
 
 BOOST_DATA_TEST_CASE(Sum_float_same_type, bdata::make(float_test_array_1) ^ bdata::make(float_test_array_2), v1, v2) {
     const float TOLERANCE = 1e-9;
@@ -379,7 +383,7 @@ BOOST_DATA_TEST_CASE(Sum_high_integer_and_normal_different_type, bdata::make(dif
 
 // Sum between a number with INT_BITS >= 0, FRAC_BITS >= 0 and another with INT_BITS < 0, FRAC_BITS >= 0 - Floating point values
 // Using previous values as input for the test
-
+/*
 BOOST_DATA_TEST_CASE(Sum_low_float_and_normal_different_type, bdata::make(different_type_low_float_test_array_1) ^ bdata::make(different_type_low_float_test_array_2), v1, v2) {
     const float TOLERANCE = 1e-9;
     extended_fixed_point_t<-4, 48> num1(v1);
@@ -404,6 +408,6 @@ BOOST_DATA_TEST_CASE(Sum_low_float_and_normal_different_type, bdata::make(differ
 
     BOOST_TEST(std::abs(num1.getValueF() - (v1 + v2)) < TOLERANCE);
     BOOST_TEST(std::abs(num3.getValueF() - (v1 + v2)) < TOLERANCE);
-}
+}*/
 
 BOOST_AUTO_TEST_SUITE_END()

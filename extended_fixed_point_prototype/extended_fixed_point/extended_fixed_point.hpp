@@ -39,7 +39,7 @@ private:
 
 public: // private??
 	// In case the comma is placed out of left it is necessary to retreive the correct value
-	uint32_t raw_remainder = 0;
+	uint32_t raw_reminder = 0;
 
 public:
 
@@ -68,7 +68,7 @@ public:
 	static this_t createRaw(const raw_t data, const int16_t raw_h) {
 		this_t val;
 		val.raw = data;
-		val.raw_remainder = raw_h;
+		val.raw_reminder = raw_h;
 		return val;
 	}
 
@@ -114,11 +114,11 @@ private:
 		if(integer_length < 0 && fractional_length >= 0) 
 			value >>= abs(integer_length);
 
-		if(raw_remainder != 0) {
+		if(raw_reminder != 0) {
 			if(integer_length < 0 && fractional_length >= 0)
-				value >>= raw_remainder;
+				value >>= raw_reminder;
 			if(integer_length >= 0 && fractional_length >= 0)
-				value <<= raw_remainder;
+				value <<= raw_reminder;
 		}
 
 		return static_cast<T>(value)/raw_booster;
@@ -144,7 +144,7 @@ public:
 		typedef extended_fixed_point_t<INT_BITS_NEW, FRAC_BITS_NEW> target_t;
 		typedef typename target_t::raw_t target_raw_t;
 
-		uint16_t raw_h = raw_remainder;
+		uint16_t raw_h = raw_reminder;
 		target_raw_t new_raw = convert_fixed_point<
 				raw_t,
 				target_raw_t,
@@ -170,7 +170,7 @@ public:
 	// Sum
 
 	this_t operator +(const this_t& value) const {
-		return this_t::createRaw(this->getRaw() + value.getRaw(), this->raw_remainder);
+		return this_t::createRaw(this->getRaw() + value.getRaw(), this->raw_reminder);
 	}
 
 	this_t& operator +=(const this_t& value) {
@@ -181,7 +181,7 @@ public:
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	this_t operator +(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
 		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
-		return this_t::createRaw(this->getRaw() + op2.getRaw(), this->raw_remainder);
+		return this_t::createRaw(this->getRaw() + op2.getRaw(), this->raw_reminder);
 	}
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
@@ -203,17 +203,17 @@ public:
 	// Difference
 
 	this_t operator -() const {
-		return this_t::createRaw(-raw, this->raw_remainder);
+		return this_t::createRaw(-raw, this->raw_reminder);
 	}
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	this_t operator -(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
 		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
-		return this_t::createRaw(getRaw() - op2.getRaw(), this->raw_remainder);
+		return this_t::createRaw(getRaw() - op2.getRaw(), this->raw_reminder);
 	}
 
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
-	this_t operator -=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
+	this_t operator -=(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) {
 		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
 		raw -= op2.getRaw();
 		return *this;
@@ -233,14 +233,11 @@ public:
 	
 	template <int16_t INT_BITS2, int16_t FRAC_BITS2>
 	this_t operator*(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& value) const {
-		/*
 		typedef extended_fixed_point_t<INT_BITS + INT_BITS2, FRAC_BITS + FRAC_BITS2> result_t;
 		typedef typename result_t::raw_t result_raw_t;
-		result_t extended_res = result_t::createRaw(static_cast<result_raw_t>(getRaw()) * static_cast<result_raw_t>(value.getRaw()));
-		return extended_res.template convert<INT_BITS, FRAC_BITS>();*/
-
-		this_t op2 = value.template convert<INT_BITS, FRAC_BITS>();
-		return this_t::createRaw(this->getRaw() * op2.getRaw(), this->raw_remainder);
+		result_t extended_res = result_t::createRaw(static_cast<result_raw_t>(getRaw()) * static_cast<result_raw_t>(value.getRaw()), this->raw_reminder);
+		auto t = extended_res.template convert<INT_BITS, FRAC_BITS>();
+		return t;
 	}
 
 	template <typename other_t>
@@ -271,7 +268,7 @@ public:
 	template<int16_t INT_BITS2, int16_t FRAC_BITS2>
 	this_t operator/(const extended_fixed_point_t<INT_BITS2, FRAC_BITS2>& divisor) const {
 		this_t op2 = divisor.template convert<INT_BITS, FRAC_BITS>();
-		return this_t::createRaw(this->getRaw() / op2.getRaw(), this->raw_remainder);
+		return this_t::createRaw(this->getRaw() / op2.getRaw(), this->raw_reminder);
 	}
 
 	template<typename other_t>

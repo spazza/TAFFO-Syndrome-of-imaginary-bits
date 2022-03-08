@@ -68,7 +68,7 @@ void generate_test_values(int num_generated_values, int num_integer_bits, int nu
     std::ofstream out_file("./test/other_testing_stuff/random_numbers.txt");
 
     for(int i = 0; i < num_generated_values; ++i)
-        out_file << std::setprecision(6) << generated_random_numbers[i] << ", ";
+        out_file << std::setprecision(8) << generated_random_numbers[i] << ", ";
         
     out_file.close();
 }
