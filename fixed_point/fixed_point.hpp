@@ -77,9 +77,12 @@ protected:
      */
     vector<bit_t> getRaw() const { return raw; }
 
-    unsigned int getBit(unsigned int pos) const {
-        return raw[pos].getBit();
-    }
+    /**
+     * @brief Get the bit associated to the input value pos
+     * @param position of the bit to be returned
+     * @return bit at the chosen position
+     */
+    unsigned int getBit(unsigned int pos) const { return raw[pos].getBit(); }
 
     // -------------------------------------------------
     // Setter
@@ -90,10 +93,13 @@ protected:
      * @param value transformed value to be assigned at the raw
      */
     void setRaw(vector<bit_t> value) { this->raw = value; }
-
-    void setBit(unsigned int pos, unsigned int value) {
-        raw[pos].setBit(value);
-    }
+	
+    /**
+     * @brief Set the value of the bit associated to the input value pos
+     * @param new value of the bit
+     * @param position of the bit to be updated
+     */
+    void setBit(unsigned int pos, unsigned int value) { raw[pos].setBit(value); }
 
 public:
 

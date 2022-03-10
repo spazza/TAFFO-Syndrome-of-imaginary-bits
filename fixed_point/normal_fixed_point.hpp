@@ -15,66 +15,99 @@ public:
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int8_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        raw_t raw = static_cast<raw_t>(value << fractional_bits);
-
-        for(int i = 0; i < fractional_bits; ++i)
-            setBit(i, 0);
-
-        for(int j = fractional_bits; j < integer_bits; ++j) {
-            // At each iteration shift the bit
-            raw_t considered_bit = 1 << j;
-
-            // Retreive the value of the i-bit
-            unsigned int temp_value = considered_bit & value;
-
-            // Set the value of the i bit
-            setBit(j, temp_value);
-        }
+		initializeRaw(static_cast<raw_t>(value << fractional_bits);
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint8_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits);
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int16_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint16_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int32_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
-
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint32_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int64_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint64_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        setRaw(static_cast<raw_t>(value << fractional_bits));
+        initializeRaw(static_cast<raw_t>(value << fractional_bits));
     }
  
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const float value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        setRaw((raw_t)(value * one));
+        initializeRaw((raw_t)(value * one));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const double value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        setRaw((raw_t)(value * one));
+        initializeRaw((raw_t)(value * one));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const long double value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        setRaw((raw_t)(value * one));
+        initializeRaw((raw_t)(value * one));
     }
+
+private:
+
+    // -------------------------------------------------
+    // Initialization helpers
+    // -------------------------------------------------
+	
+	void initializeRaw(raw_t value) {
+		for(int i = 0; i < fractional_bits + fractional_bits; ++i) {
+			// At each iteration shift the bit
+			raw_t considered_bit = 1 << i;
+			
+			// Retreive the value of the i-bit
+			unsigned int temp_value = considered_bit & value;
+			
+			// Set the value of the i-bit
+			setBit(i, temp_value);
+		}
+	}	
+
+	void initializeFracPart(raw_t value) {
+		for(int i = 0; i < fractional_bits; ++i) {
+			// At each iteration shift the bit
+			raw_t considered_bit = 1 << i;
+			
+			// Retreive the value of the i-bit
+			unsigned int temp_value = considered_bit & value;
+			
+			// Set the value of the i-bit
+			setBit(i, temp_value);
+		}
+	}
+
+    void initializeIntPart(raw_t value) {
+		// It starts from i = fractional_bits because the previous bits have been already set
+        for(int i = fractional_bits; i < fractional_bits + integer_bits; ++i) {
+            // At each iteration shift the bit
+            raw_t considered_bit = 1 << i;
+
+            // Retreive the value of the i-bit
+            unsigned int temp_value = considered_bit & value;
+
+            // Set the value of the i-bit
+            setBit(i, temp_value);
+        }
+    }	
+
+public:
 
     // -------------------------------------------------
     // Accessors
