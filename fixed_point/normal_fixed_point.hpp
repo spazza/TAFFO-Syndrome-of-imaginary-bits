@@ -68,7 +68,7 @@ private:
     // -------------------------------------------------
 	
 	void initializeRaw(raw_t value) {
-		for(int i = 0; i < fractional_bits + fractional_bits; ++i) {
+		for(int i = 0; i < fractional_bits + integer_bits; ++i) {
 			// At each iteration shift the bit
 			raw_t considered_bit = 1 << i;
 			
@@ -79,33 +79,22 @@ private:
 			setBit(i, temp_value);
 		}
 	}	
-
-	void initializeFracPart(raw_t value) {
-		for(int i = 0; i < fractional_bits; ++i) {
-			// At each iteration shift the bit
-			raw_t considered_bit = 1 << i;
-			
-			// Retreive the value of the i-bit
-			unsigned int temp_value = considered_bit & value;
-			
-			// Set the value of the i-bit
-			setBit(i, temp_value);
-		}
-	}
-
-    void initializeIntPart(raw_t value) {
-		// It starts from i = fractional_bits because the previous bits have been already set
-        for(int i = fractional_bits; i < fractional_bits + integer_bits; ++i) {
-            // At each iteration shift the bit
-            raw_t considered_bit = 1 << i;
-
-            // Retreive the value of the i-bit
-            unsigned int temp_value = considered_bit & value;
-
-            // Set the value of the i-bit
-            setBit(i, temp_value);
-        }
-    }	
+	
+	template<T> 
+	T getValueT() const override {
+		T temp_value = 0;
+		
+		for(int i = 0; i < fractional_bits; ++i)
+			if(getBit(i) == 1)
+				temp_value += 2 ^ (fractional_bits - i);
+		
+		// Start from fractional_bits in the counter because the return value is integer 
+		for(int i = fractional_bits; i < fractional_bits + integer_bits; ++i)
+			if(getBit(i) == 1)
+				temp_value += 2 ^ i;
+		
+		return temp_value;
+	}	
 
 public:
 
@@ -113,24 +102,13 @@ public:
     // Accessors
     // -------------------------------------------------
 
-    float getValueF() const override {
-        raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<float>(this->getRaw())/one;
-    }
+    float getValueF() const override { return getValueT<float>(); }
 
-    double getValueFD() const override {
-        raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<double>(this->getRaw())/one;
-    }
+    double getValueFD() const override { return getValueT<double>(); }
 
-    long double getValueFLD() const override {
-        raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<long double>(this->getRaw())/one;
-    }
+    long double getValueFLD() const override { return getValueT<long double>(); }
 
-    raw_t getValue() const override {
-        return static_cast<raw_t>(this->getRaw() >> fractional_bits);
-    }
+    raw_t getValue() const override { return getValueT<raw_t>(); }
 
     // -------------------------------------------------
     // Assignment operators

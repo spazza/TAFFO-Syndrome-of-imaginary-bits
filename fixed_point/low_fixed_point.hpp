@@ -24,40 +24,19 @@ struct low_fixed_point_t : public fixed_point_t {
         setRaw(((raw_t)(value * one)) << outside_bits);
     }    
 
-    /**
-     * @brief Get the floating point value of the fixed_point.
-     * @return float value of the fixed_point.
-     */
-    float getValueF() const override {
-        raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<float>(this->getRaw() >> outside_bits)/one;
-    }
+public:
 
-    /**
-     * @brief Get the double precision floating point value of the fixed_point.
-     * @return float value of the fixed_point.
-     */
-    double getValueFD() const override {
-        raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<double>(this->getRaw() >> outside_bits)/one;
-    }
+    // -------------------------------------------------
+    // Accessors
+    // -------------------------------------------------
 
-    /**
-     * @brief Get the long double precision floating point value of the fixed_point.
-     * @return float value of the fixed_point.
-     */
-    long double getValueFLD() const override {
-        raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<long double>(this->getRaw() >> outside_bits)/one;
-    }
+    float getValueF() const override { return getValueT<float>(); }
 
-    /**
-     * @brief Get the integer value of the fixed_point.
-     * @return raw_t integer value of the fixed_point.
-     */
-    raw_t getValue() const override {
-        return static_cast<raw_t>(getRaw() >> outside_bits);
-    }    
+    double getValueFD() const override { return getValueT<double>(); }
+	
+	long double getValueFLD() const override { return getValueT<long double>(); }
+	
+	raw_t getValue() const override { return getValue<raw_t>(); }
 
     // -------------------------------------------------
     // Assignment operators

@@ -1,7 +1,7 @@
 # Discarded Folders
-build/
 .vscode/
+test/out_files
 
 # Discarded Files
-*.ll
+
 

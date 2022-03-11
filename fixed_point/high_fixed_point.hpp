@@ -10,84 +10,92 @@ public:
     // -------------------------------------------------
     // Constructors
     // -------------------------------------------------
-
-    /**
-     * @brief Construct a new high_fixed_point_t object assigning integer bits, outside bits and zero raw value.
-     * Finally, it creates the normalization procedure for the next operations.
-     * @param integer_bits bits that composes the integer part of the range.
-     * @param outside_bits bits that are out of the range on the right.
-     */
+	
     high_fixed_point_t(const int integer_bits, const int outside_bits) : fixed_point_t(integer_bits, 0, outside_bits) {
         setRaw(0);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int8_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint8_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int16_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint16_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int32_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint32_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int64_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint64_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        setRaw(static_cast<raw_t>(value >> outside_bits));
+        initializeRaw(static_cast<raw_t>(value >> outside_bits);
     }
+	
+private:
 
-    /**
-     * @brief Get the floating point value of the fixed_point.
-     * @return float value of the fixed_point.
-     */
-    float getValueF() const override {
-        raw_t one = (raw_t)1;
-        return static_cast<float>(getRaw() << outside_bits)/one;
-    }
+    // -------------------------------------------------
+    // Initialization helpers
+    // -------------------------------------------------
+	
+	void initializeRaw(raw_t value) {
+		for(int i = 0; i < fractional_bits + integer_bits; ++i) {
+			// At each iteration shift the bit
+			raw_t considered_bit = 1 << i;
+			
+			// Retreive the value of the i-bit
+			unsigned int temp_value = considered_bit & value;
+			
+			// Set the value of the i-bit
+			setBit(i, temp_value);
+		}
+	}	
+	
+	template<T> 
+	T getValueT() const override {
+		T temp_value = 0;
+		
+		for(int i = 0; i < fractional_bits; ++i)
+			if(getBit(i) == 1)
+				temp_value += 2 ^ (fractional_bits - i);
+		
+		// Start from fractional_bits in the counter because the return value is integer 
+		for(int i = fractional_bits; i < fractional_bits + integer_bits; ++i)
+			if(getBit(i) == 1)
+				temp_value += 2 ^ i;
+		
+		return temp_value;
+	}	
+	
+public:
 
-    /**
-     * @brief Get the double precision floating point value of the fixed_point.
-     * @return float value of the fixed_point.
-     */
-    double getValueFD() const override {
-        raw_t one = (raw_t)1;
-        return static_cast<double>(getRaw() << outside_bits)/one;
-    }
+    // -------------------------------------------------
+    // Accessors
+    // -------------------------------------------------
 
-    /**
-     * @brief Get the long double precision floating point value of the fixed_point.
-     * @return float value of the fixed_point.
-     */
-    long double getValueFLD() const override {
-        raw_t one = (raw_t)1;
-        return static_cast<long double>(getRaw() << outside_bits)/one;
-    }
+    float getValueF() const override { return getValueT<float>(); }
 
-    /**
-     * @brief Get the integer value of the fixed_point.
-     * @return raw_t integer value of the fixed_point.
-     */
-    raw_t getValue() const override {
-        return static_cast<raw_t>(getRaw() << outside_bits);
-    }
-
+    double getValueFD() const override { return getValueT<double>(); }
+	
+	long double getValueFLD() const override { return getValueT<long double>(); }
+	
+	raw_t getValue() const override { return getValue<raw_t>(); }
+	
     // -------------------------------------------------
     // Assignment operators
     // -------------------------------------------------
