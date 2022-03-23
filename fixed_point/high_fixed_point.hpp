@@ -12,75 +12,40 @@ public:
     // -------------------------------------------------
 	
     high_fixed_point_t(const int integer_bits, const int outside_bits) : fixed_point_t(integer_bits, 0, outside_bits) {
-        setRaw(0);
+        setRaw(static_cast<raw_t>(0));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int8_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint8_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int16_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint16_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int32_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint32_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const int64_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
 
     high_fixed_point_t(const int integer_bits, const int outside_bits, const uint64_t value) : fixed_point_t(integer_bits, 0, outside_bits) { 
-        initializeRaw(static_cast<raw_t>(value >> outside_bits);
+        setRaw(static_cast<raw_t>(value >> outside_bits));
     }
-	
-private:
-
-    // -------------------------------------------------
-    // Initialization helpers
-    // -------------------------------------------------
-	
-	void initializeRaw(raw_t value) {
-		for(int i = 0; i < fractional_bits + integer_bits; ++i) {
-			// At each iteration shift the bit
-			raw_t considered_bit = 1 << i;
-			
-			// Retreive the value of the i-bit
-			unsigned int temp_value = considered_bit & value;
-			
-			// Set the value of the i-bit
-			setBit(i, temp_value);
-		}
-	}	
-	
-	template<T> 
-	T getValueT() const override {
-		T temp_value = 0;
-		
-		for(int i = 0; i < fractional_bits; ++i)
-			if(getBit(i) == 1)
-				temp_value += 2 ^ (fractional_bits - i);
-		
-		// Start from fractional_bits in the counter because the return value is integer 
-		for(int i = fractional_bits; i < fractional_bits + integer_bits; ++i)
-			if(getBit(i) == 1)
-				temp_value += 2 ^ i;
-		
-		return temp_value;
-	}	
 	
 public:
 
@@ -88,13 +53,22 @@ public:
     // Accessors
     // -------------------------------------------------
 
-    float getValueF() const override { return getValueT<float>(); }
+    float getValueF() const override { 
+        raw_t one = ((raw_t)1) << outside_bits;
+        return static_cast<float>(getRaw())/one; 
+    }
 
-    double getValueFD() const override { return getValueT<double>(); }
-	
-	long double getValueFLD() const override { return getValueT<long double>(); }
-	
-	raw_t getValue() const override { return getValue<raw_t>(); }
+    double getValueFD() const override { 
+        raw_t one = ((raw_t)1) << outside_bits;
+        return static_cast<double>(getRaw())/one;  
+    }
+
+    long double getValueFLD() const override { 
+        raw_t one = ((raw_t)1) << outside_bits;
+        return static_cast<long double>(getRaw())/one;  
+    }
+
+    raw_t getValue() const override { return static_cast<raw_t>(getRaw() << outside_bits); }
 	
     // -------------------------------------------------
     // Assignment operators

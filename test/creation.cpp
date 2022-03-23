@@ -11,7 +11,7 @@
 #include "low_fixed_point.hpp"
 #include "high_fixed_point.hpp"
 
-#define NUM_VALUES 100  // Number of test for each test case
+#define NUM_VALUES 10000  // Number of test for each test case
 
 using namespace std;
 namespace bdata = boost::unit_test::data;

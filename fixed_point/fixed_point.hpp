@@ -2,8 +2,6 @@
 #define FIXED_POINT_HPP
 #define PURE 0 //for pure virtual methods
 
-#include "bit.hpp"
-
 #include <limits>
 #include <cstdint>
 #include <cmath>
@@ -51,7 +49,7 @@ public:
 
 private:
 
-    vector<bit_t> raw;
+    raw_t raw;
 
 protected:
 
@@ -67,6 +65,8 @@ protected:
      */
     fixed_point_t(const int integer_bits, const int fractional_bits, const int outside_bits) : integer_bits(integer_bits), fractional_bits(fractional_bits), outside_bits(outside_bits) {}
 
+public:
+
     // -------------------------------------------------
     // Getter
     // -------------------------------------------------
@@ -75,14 +75,7 @@ protected:
      * @brief Get the value of the raw object.
      * @return auto value of the raw object.
      */
-    vector<bit_t> getRaw() const { return raw; }
-
-    /**
-     * @brief Get the bit associated to the input value pos
-     * @param position of the bit to be returned
-     * @return bit at the chosen position
-     */
-    unsigned int getBit(unsigned int pos) const { return raw[pos].getBit(); }
+    raw_t getRaw() const { return raw; }
 
     // -------------------------------------------------
     // Setter
@@ -92,14 +85,7 @@ protected:
      * @brief Set the value of the raw object.
      * @param value transformed value to be assigned at the raw
      */
-    void setRaw(vector<bit_t> value) { this->raw = value; }
-	
-    /**
-     * @brief Set the value of the bit associated to the input value pos
-     * @param new value of the bit
-     * @param position of the bit to be updated
-     */
-    void setBit(unsigned int pos, unsigned int value) { raw[pos].setBit(value); }
+    void setRaw(raw_t value) { this->raw = value; }
 
 public:
 
@@ -177,15 +163,15 @@ public:
 
     // Division
 
-    virtual fixed_point_t& operator/(const fixed_point_t& value) const = PURE;
+    //virtual fixed_point_t& operator/(const fixed_point_t& value) const = PURE;
 
-    virtual fixed_point_t& operator/=(const fixed_point_t& value) = PURE;
+    //virtual fixed_point_t& operator/=(const fixed_point_t& value) = PURE;
 
     // -------------------------------------------------
     // Print
     // -------------------------------------------------
 
-    virtual ostream& emit(ostream& os) const = PURE;
+    //virtual ostream& emit(ostream& os) const = PURE;
 
 };
 

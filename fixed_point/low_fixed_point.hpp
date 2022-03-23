@@ -6,7 +6,7 @@
 struct low_fixed_point_t : public fixed_point_t {
 
     low_fixed_point_t(const int fractional_bits, const int outside_bits) : fixed_point_t(0, fractional_bits, outside_bits) {
-        setRaw(0);
+        setRaw(static_cast<raw_t>(0));
     }
 
     low_fixed_point_t(const int fractional_bits, const int outside_bits, const float value) : fixed_point_t(0, fractional_bits, outside_bits) { 
@@ -30,13 +30,22 @@ public:
     // Accessors
     // -------------------------------------------------
 
-    float getValueF() const override { return getValueT<float>(); }
+    float getValueF() const override { 
+        raw_t one = ((raw_t)1) << fractional_bits;
+        return static_cast<float>(getRaw() >> outside_bits)/one; 
+    }
 
-    double getValueFD() const override { return getValueT<double>(); }
-	
-	long double getValueFLD() const override { return getValueT<long double>(); }
-	
-	raw_t getValue() const override { return getValue<raw_t>(); }
+    double getValueFD() const override { 
+        raw_t one = ((raw_t)1) << fractional_bits;
+        return static_cast<double>(getRaw() >> outside_bits)/one;  
+    }
+
+    long double getValueFLD() const override { 
+        raw_t one = ((raw_t)1) << fractional_bits;
+        return static_cast<long double>(getRaw() >> outside_bits)/one;  
+    }
+
+    raw_t getValue() const override { return static_cast<raw_t>(getRaw() >> outside_bits); }
 
     // -------------------------------------------------
     // Assignment operators
@@ -160,7 +169,7 @@ public:
         }
     }
 
-    // Difference
+    // Product
 
     fixed_point_t& operator*(const fixed_point_t& value) const override {
         if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {

@@ -11,7 +11,7 @@
 #include "high_fixed_point.hpp"
 #include "number_generator.hpp"
 
-#define NUM_VALUES 100  // Number of test for each test case
+#define NUM_VALUES 10000  // Number of test for each test case
 
 using namespace std;
 namespace bdata = boost::unit_test::data;
@@ -42,7 +42,14 @@ BOOST_DATA_TEST_CASE(Normal_fixed_point_logical_operators, normal_int ^ normal_f
             numbers_1[i] = numbers_2[i];
             numbers_2[i] = temp;
         }
-
+    
+    // In case the two random generated numbers are equal
+    for(int i = 0; i < NUM_VALUES; ++i) 
+        if(numbers_1[i] == numbers_2[i]) {
+            numbers_1[i] = numbers_1[i-1];
+            numbers_2[i] = numbers_2[i-1];
+        }
+    
     for(int i = 0; i < NUM_VALUES; ++i) {
         normal_fixed_point_t fp_lower(INT, FRAC, numbers_1[i]);
         normal_fixed_point_t fp_greater(INT, FRAC, numbers_2[i]);
@@ -92,6 +99,13 @@ BOOST_DATA_TEST_CASE(High_fixed_point_logical_operators, high_int ^ high_out, IN
             numbers_1[i] = numbers_2[i];
             numbers_2[i] = temp;
         }
+    
+    // In case the two random generated numbers are equal
+    for(int i = 0; i < NUM_VALUES; ++i) 
+        if(numbers_1[i] == numbers_2[i]) {
+            numbers_1[i] = numbers_1[i-1];
+            numbers_2[i] = numbers_2[i-1];
+        }
 
     for(int i = 0; i < NUM_VALUES; ++i) {
         high_fixed_point_t fp_lower(INT, OUT, numbers_1[i]);
@@ -136,13 +150,19 @@ BOOST_DATA_TEST_CASE(Low_fixed_point_logical_operators, low_frac ^ low_out, FRAC
     vector<float> numbers_2 = gen.generate_low_fixed_point(NUM_VALUES);
     
     // Fix the vectors such that the lower is in the first and the greater in the second.
-    for(int i = 0; i < NUM_VALUES; ++i) {
+    for(int i = 0; i < NUM_VALUES; ++i) 
         if(numbers_1[i] > numbers_2[i]) {
             float temp   = numbers_1[i];
             numbers_1[i] = numbers_2[i];
             numbers_2[i] = temp;
         }
-    }
+    
+    // In case the two random generated numbers are equal
+    for(int i = 0; i < NUM_VALUES; ++i) 
+        if(numbers_1[i] == numbers_2[i]) {
+            numbers_1[i] = numbers_1[i-1];
+            numbers_2[i] = numbers_2[i-1];
+        }
 
     for(int i = 0; i < NUM_VALUES; ++i) {
         low_fixed_point_t fp_lower(FRAC, OUT, numbers_1[i]);

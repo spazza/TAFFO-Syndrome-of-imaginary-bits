@@ -12,7 +12,7 @@
 #include "number_generator.hpp"
 
 #define TOLERANCE 1e-9  // For floating point approximation
-#define NUM_VALUES 100  // Number of test for each test case
+#define NUM_VALUES 10000  // Number of test for each test case
 
 using namespace std;
 namespace bdata = boost::unit_test::data;

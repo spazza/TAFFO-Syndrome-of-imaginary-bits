@@ -11,90 +11,55 @@ public:
     // Constructors
     // -------------------------------------------------
     normal_fixed_point_t(const int integer_bits, const int fractional_bits) : fixed_point_t(integer_bits, fractional_bits, 0) {
-        setRaw(0);
+        setRaw(static_cast<raw_t>(0));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int8_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-		initializeRaw(static_cast<raw_t>(value << fractional_bits);
+		setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint8_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits);
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int16_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits));
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint16_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits));
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int32_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits));
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint32_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits));
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const int64_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits));
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const uint64_t value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
-        initializeRaw(static_cast<raw_t>(value << fractional_bits));
+        setRaw(static_cast<raw_t>(value << fractional_bits));
     }
  
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const float value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        initializeRaw((raw_t)(value * one));
+        setRaw((raw_t)(value * one));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const double value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        initializeRaw((raw_t)(value * one));
+        setRaw((raw_t)(value * one));
     }
 
     normal_fixed_point_t(const int integer_bits, const int fractional_bits, const long double value) : fixed_point_t(integer_bits, fractional_bits, 0) { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        initializeRaw((raw_t)(value * one));
+        setRaw((raw_t)(value * one));
     }
-
-private:
-
-    // -------------------------------------------------
-    // Initialization helpers
-    // -------------------------------------------------
-	
-	void initializeRaw(raw_t value) {
-		for(int i = 0; i < fractional_bits + integer_bits; ++i) {
-			// At each iteration shift the bit
-			raw_t considered_bit = 1 << i;
-			
-			// Retreive the value of the i-bit
-			unsigned int temp_value = considered_bit & value;
-			
-			// Set the value of the i-bit
-			setBit(i, temp_value);
-		}
-	}	
-	
-	template<T> 
-	T getValueT() const override {
-		T temp_value = 0;
-		
-		for(int i = 0; i < fractional_bits; ++i)
-			if(getBit(i) == 1)
-				temp_value += 2 ^ (fractional_bits - i);
-		
-		// Start from fractional_bits in the counter because the return value is integer 
-		for(int i = fractional_bits; i < fractional_bits + integer_bits; ++i)
-			if(getBit(i) == 1)
-				temp_value += 2 ^ i;
-		
-		return temp_value;
-	}	
 
 public:
 
@@ -102,18 +67,27 @@ public:
     // Accessors
     // -------------------------------------------------
 
-    float getValueF() const override { return getValueT<float>(); }
+    float getValueF() const override { 
+        raw_t one = ((raw_t)1) << fractional_bits;
+        return static_cast<float>(getRaw())/one; 
+    }
 
-    double getValueFD() const override { return getValueT<double>(); }
+    double getValueFD() const override { 
+        raw_t one = ((raw_t)1) << fractional_bits;
+        return static_cast<double>(getRaw())/one;  
+    }
 
-    long double getValueFLD() const override { return getValueT<long double>(); }
+    long double getValueFLD() const override { 
+        raw_t one = ((raw_t)1) << fractional_bits;
+        return static_cast<long double>(getRaw())/one;  
+    }
 
-    raw_t getValue() const override { return getValueT<raw_t>(); }
+    raw_t getValue() const override { return static_cast<raw_t>(getRaw() >> fractional_bits); }
 
     // -------------------------------------------------
     // Assignment operators
     // -------------------------------------------------
-
+    
     fixed_point_t& operator=(const fixed_point_t& value) override {
         if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
             setRaw(value.getRaw());
@@ -181,7 +155,7 @@ public:
             return false;
         }
     }
-
+    
     // -------------------------------------------------
     // Arithmetic operators
     // -------------------------------------------------
@@ -231,7 +205,7 @@ public:
             return *this;
         }
     }
-
+    
     // Product
 
     fixed_point_t& operator*(const fixed_point_t& value) const override {
