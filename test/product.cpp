@@ -28,7 +28,7 @@ auto normal_frac = bdata::make({8, 4, 16, 16, 8});
 
 /**
  *  Test the correct product of normal_fixed_point.
- */
+ *
 BOOST_TEST_DECORATOR(*utf::description("Test the correct product of the normal_fixed_point_t"))
 BOOST_DATA_TEST_CASE(Normal_fixed_point_product, normal_int ^ normal_frac, INT, FRAC) {
     number_generator_t gen(INT, FRAC, 0);

@@ -69,17 +69,17 @@ public:
 
     float getValueF() const override { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<float>(getRaw())/one; 
+        return static_cast<float>(this->getRaw())/one; 
     }
 
     double getValueFD() const override { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<double>(getRaw())/one;  
+        return static_cast<double>(this->getRaw())/one;  
     }
 
     long double getValueFLD() const override { 
         raw_t one = ((raw_t)1) << fractional_bits;
-        return static_cast<long double>(getRaw())/one;  
+        return static_cast<long double>(this->getRaw())/one;  
     }
 
     raw_t getValue() const override { return static_cast<raw_t>(getRaw() >> fractional_bits); }
@@ -89,7 +89,7 @@ public:
     // -------------------------------------------------
     
     fixed_point_t& operator=(const fixed_point_t& value) override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             setRaw(value.getRaw());
             return *this;
         } else {
@@ -103,7 +103,7 @@ public:
     // -------------------------------------------------
 
     bool operator<(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() < value.getRaw();
         } else {
             // TO-DO
@@ -112,7 +112,7 @@ public:
     }
 
     bool operator>(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() > value.getRaw();
         } else {
             // TO-DO
@@ -121,7 +121,7 @@ public:
     }
 
     bool operator==(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() == value.getRaw();
         } else {
             // TO-DO
@@ -130,7 +130,7 @@ public:
     }
 
     bool operator!=(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() != value.getRaw();
         } else {
             // TO-DO
@@ -139,7 +139,7 @@ public:
     }
 
     bool operator<=(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return !(*this > value);
         } else {
             // TO-DO
@@ -148,7 +148,7 @@ public:
     }
 
     bool operator>=(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return !(*this < value);
         } else {
             // TO-DO
@@ -163,7 +163,7 @@ public:
     // Sum
 
     fixed_point_t& operator+(const fixed_point_t& value) const override{
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             fixed_point_t *new_fp = new normal_fixed_point_t(integer_bits, fractional_bits);
             new_fp->setRaw(this->getRaw() + value.getRaw());
             return *new_fp;
@@ -174,7 +174,7 @@ public:
     }
 
     fixed_point_t& operator+=(const fixed_point_t& value) override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             setRaw(getRaw() + value.getRaw());
             return *this;
         } else {
@@ -186,7 +186,7 @@ public:
     // Difference
 
     fixed_point_t& operator-(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             fixed_point_t *new_fp = new normal_fixed_point_t(integer_bits, fractional_bits);
             new_fp->setRaw(this->getRaw() - value.getRaw());
             return *new_fp;
@@ -197,7 +197,7 @@ public:
     }
 
     fixed_point_t& operator-=(const fixed_point_t& value) override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             setRaw(getRaw() - value.getRaw());
             return *this;
         } else {
@@ -209,7 +209,7 @@ public:
     // Product
 
     fixed_point_t& operator*(const fixed_point_t& value) const override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             fixed_point_t *new_fp = new normal_fixed_point_t(integer_bits, fractional_bits);
             new_fp->setRaw(this->getRaw() * value.getRaw());
             return *new_fp;
@@ -220,7 +220,7 @@ public:
     }
 
     fixed_point_t& operator*=(const fixed_point_t& value) override {
-        if(this->integer_bits == value.integer_bits && this->fractional_bits == value.fractional_bits) {
+        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             setRaw(getRaw() * value.getRaw());
             return *this;
         } else {
@@ -228,6 +228,33 @@ public:
             return *this;
         }
     }
+
+    // Division
+
+    // Conversion
+
+    void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) override {
+        if(new_frac_bits > this->fractional_bits) {
+            unsigned int sha = new_frac_bits - this->fractional_bits;
+            setRaw(getRaw() << sha);
+        } else {
+            unsigned int sha = this->fractional_bits - new_frac_bits;
+            setRaw(getRaw() >> sha);
+        }
+
+        this->integer_bits = new_int_bits;
+        this->fractional_bits = new_frac_bits;
+    }
+
+    void convert_to_high_fixed_point_t(unsigned int new_int_bits, unsigned int new_out_bits) override {
+        // TO-DO
+    }
+
+    void convert_to_low_fixed_point_t(unsigned int new_frac_bits, unsigned int new_out_bits) override {
+        // TO-DO
+    }
+
+    // Print
 };
 
 #endif

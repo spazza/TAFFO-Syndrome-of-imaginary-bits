@@ -52,7 +52,7 @@ public:
     // -------------------------------------------------
 
     fixed_point_t& operator=(const fixed_point_t& value) override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             setRaw(value.getRaw());
             return *this;
         } else {
@@ -66,7 +66,7 @@ public:
     // -------------------------------------------------
 
     bool operator<(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() < value.getRaw();
         } else {
             // TO-DO
@@ -75,7 +75,7 @@ public:
     }
 
     bool operator>(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() > value.getRaw();
         } else {
             // TO-DO
@@ -84,7 +84,7 @@ public:
     }
 
     bool operator==(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() == value.getRaw();
         } else {
             // TO-DO
@@ -93,7 +93,7 @@ public:
     }
 
     bool operator!=(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() != value.getRaw();
         } else {
             // TO-DO
@@ -102,7 +102,7 @@ public:
     }
 
     bool operator<=(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             return !(*this > value);
         } else {
             // TO-DO
@@ -111,7 +111,7 @@ public:
     }
 
     bool operator>=(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             return !(*this < value);
         } else {
             // TO-DO
@@ -126,7 +126,7 @@ public:
     // Sum
 
     fixed_point_t& operator+(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             fixed_point_t *new_fp = new low_fixed_point_t(fractional_bits, outside_bits);
             new_fp->setRaw(this->getRaw() + value.getRaw());
             return *new_fp;
@@ -137,7 +137,7 @@ public:
     }
 
     fixed_point_t& operator+=(const fixed_point_t& value) override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             setRaw(getRaw() + value.getRaw());
             return *this;
         } else {
@@ -149,7 +149,7 @@ public:
     // Difference
 
     fixed_point_t& operator-(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             fixed_point_t *new_fp = new low_fixed_point_t(fractional_bits, outside_bits);
             new_fp->setRaw(this->getRaw() - value.getRaw());
             return *new_fp;
@@ -160,7 +160,7 @@ public:
     }
 
     fixed_point_t& operator-=(const fixed_point_t& value) override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             setRaw(getRaw() - value.getRaw());
             return *this;
         } else {
@@ -172,7 +172,7 @@ public:
     // Product
 
     fixed_point_t& operator*(const fixed_point_t& value) const override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             fixed_point_t *new_fp = new low_fixed_point_t(fractional_bits, outside_bits);
             new_fp->setRaw(this->getRaw() * value.getRaw());
             return *new_fp;
@@ -183,7 +183,7 @@ public:
     }
 
     fixed_point_t& operator*=(const fixed_point_t& value) override {
-        if(this->fractional_bits == value.fractional_bits && this->outside_bits == value.outside_bits) {
+        if(this->fractional_bits == value.getFracBits() && this->outside_bits == value.getOutBits()) {
             setRaw(getRaw() * value.getRaw());
             return *this;
         } else {
@@ -191,6 +191,41 @@ public:
             return *this;
         }
     }
+
+    // Division
+
+    // Conversion
+
+    void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) override {
+        // TO-DO
+    }
+
+    void convert_to_high_fixed_point_t(unsigned int new_int_bits, unsigned int new_out_bits) override {
+        // TO-DO
+    }
+
+    void convert_to_low_fixed_point_t(unsigned int new_frac_bits, unsigned int new_out_bits) override {
+        if(new_frac_bits > this->fractional_bits) {
+            unsigned int sha = new_frac_bits - this->fractional_bits;
+            setRaw(getRaw() << sha);
+        } else {
+            unsigned int sha = this->fractional_bits - new_frac_bits;
+            setRaw(getRaw() >> sha);
+        }
+
+        if(new_out_bits > this->outside_bits) {
+            unsigned int sha = new_out_bits - this->outside_bits;
+            setRaw(getRaw() << sha);
+        } else {
+            unsigned int sha = this->outside_bits - new_out_bits;
+            setRaw(getRaw() >> sha);
+        }
+
+        this->fractional_bits = new_frac_bits;
+        this->outside_bits = new_out_bits;
+    }
+    
+    // Print
 };
 
 #endif

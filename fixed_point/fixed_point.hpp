@@ -2,6 +2,8 @@
 #define FIXED_POINT_HPP
 #define PURE 0 //for pure virtual methods
 
+#include "fixed_point_utils.hpp"
+
 #include <limits>
 #include <cstdint>
 #include <cmath>
@@ -30,22 +32,24 @@ public:
      * @brief It represents the low limit of the range that composes the raw value.
      */
     static const int high_lim = std::numeric_limits<raw_t>::digits;
+
+protected:
     
     /**
      * @brief Integer bits that make up the fixed-point.
      */
-    const unsigned int integer_bits;
+    unsigned int integer_bits;
 
     /**
      * @brief Fractional bits that make up the fixed-point.
      */
-    const unsigned int fractional_bits;
+    unsigned int fractional_bits;
 
     /**
      * @brief Bits that are considered out of the range in case high_fixed_point or low_fixed_point are
      * used.
      */
-    const unsigned int outside_bits;
+    unsigned int outside_bits;
 
 private:
 
@@ -76,6 +80,12 @@ public:
      * @return auto value of the raw object.
      */
     raw_t getRaw() const { return raw; }
+
+    unsigned int getIntBits() const { return integer_bits; }
+
+    unsigned int getFracBits() const { return fractional_bits; }
+
+    unsigned int getOutBits() const { return outside_bits; }
 
     // -------------------------------------------------
     // Setter
@@ -166,6 +176,14 @@ public:
     //virtual fixed_point_t& operator/(const fixed_point_t& value) const = PURE;
 
     //virtual fixed_point_t& operator/=(const fixed_point_t& value) = PURE;
+
+    // Conversion
+
+    virtual void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) = PURE;
+
+    virtual void convert_to_high_fixed_point_t(unsigned int new_int_bits, unsigned int new_out_bits) = PURE;
+
+    virtual void convert_to_low_fixed_point_t(unsigned int new_frac_bits, unsigned int new_out_bits) = PURE;
 
     // -------------------------------------------------
     // Print
