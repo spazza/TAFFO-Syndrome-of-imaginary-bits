@@ -232,7 +232,47 @@ public:
 
     // Division
 
+    fixed_point_t& operator/(const fixed_point_t& value) const override {
+        if(integer_bits == value.getIntBits() && outside_bits == value.getOutBits()) {
+            fixed_point_t *new_fp = new high_fixed_point_t(integer_bits, outside_bits);
+
+            raw_t intermediate = getRaw();
+
+            intermediate >>= value.getOutBits();
+            intermediate /= value.getRaw();
+
+            new_fp->setRaw(intermediate);
+
+            return *new_fp;
+        } else {
+            // TO-DO
+            return *(new high_fixed_point_t(integer_bits, outside_bits));
+        }
+    }
+
+    fixed_point_t& operator/=(const fixed_point_t& value) override {
+        if(integer_bits == value.getIntBits() && outside_bits == value.getOutBits()) {
+
+            raw_t intermediate = getRaw();
+
+            intermediate >>= value.getOutBits();
+
+            intermediate /= value.getRaw();
+
+            setRaw(intermediate);
+            
+            return *this;
+
+        } else {
+            // TO-DO
+            return *this;
+        }
+    }
+
+
+    // -------------------------------------------------
     // Conversion
+    // -------------------------------------------------
 
     void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) override {
         // TO-DO
@@ -255,7 +295,14 @@ public:
         // TO-DO
     }
 
+    // -------------------------------------------------
     // Print
+    // -------------------------------------------------
+    
+    friend std::ostream& operator<<(std::ostream& stream, const high_fixed_point_t& fp) {
+        stream << fp.getValue();
+        return stream;
+    }
 };
 
 #endif

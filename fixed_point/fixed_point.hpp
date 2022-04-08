@@ -5,9 +5,10 @@
 #include "fixed_point_utils.hpp"
 
 #include <limits>
-#include <cstdint>
+//#include <cstdint>
 #include <cmath>
-#include <vector>
+#include <ostream>
+#include <iomanip>
 
 #ifdef _IS64bit
 typedef __int128 raw_t;
@@ -173,11 +174,13 @@ public:
 
     // Division
 
-    //virtual fixed_point_t& operator/(const fixed_point_t& value) const = PURE;
+    virtual fixed_point_t& operator/(const fixed_point_t& value) const = PURE;
 
-    //virtual fixed_point_t& operator/=(const fixed_point_t& value) = PURE;
+    virtual fixed_point_t& operator/=(const fixed_point_t& value) = PURE;
 
+    // -------------------------------------------------
     // Conversion
+    // -------------------------------------------------
 
     virtual void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) = PURE;
 
@@ -189,8 +192,7 @@ public:
     // Print
     // -------------------------------------------------
 
-    //virtual ostream& emit(ostream& os) const = PURE;
-
+    friend std::ostream& operator<<(std::ostream& stream, const fixed_point_t& fp);
 };
 
 #endif

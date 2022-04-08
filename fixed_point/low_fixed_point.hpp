@@ -200,6 +200,7 @@ public:
 
             // Come back to the previous representation, this may cause a loss of bits 
             convert_to_low_fixed_point_t(value.getFracBits(), value.getOutBits());
+
             return *this;
         } else {
             // TO-DO
@@ -209,7 +210,47 @@ public:
 
     // Division
 
+    fixed_point_t& operator/(const fixed_point_t& value) const override {
+        if(fractional_bits == value.getFracBits() && outside_bits == value.getOutBits()) {
+            
+            fixed_point_t *new_fp = new low_fixed_point_t(fractional_bits, outside_bits);
+
+            // Normalize the dividend to obtain a correct fixed_point
+            raw_t intermediate = getRaw();
+            intermediate <<= value.getFracBits() + value.getOutBits();
+
+            intermediate /= value.getRaw();
+
+            new_fp->setRaw(intermediate);
+
+            return *new_fp;
+        } else {
+            // TO-DO
+            return *(new low_fixed_point_t(fractional_bits, outside_bits));
+        }
+    }
+
+    fixed_point_t& operator/=(const fixed_point_t& value) override {
+        if(fractional_bits == value.getFracBits() && outside_bits == value.getOutBits()) {
+
+            raw_t intermediate = getRaw();
+            intermediate <<= value.getFracBits() + value.getOutBits();
+
+            intermediate /= value.getRaw();
+
+            setRaw(intermediate);
+
+            return *this;
+        } else {
+            // TO-DO
+            return *this;
+        }
+    }
+
+
+    // -------------------------------------------------
     // Conversion
+    // -------------------------------------------------
 
     void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) override {
         // TO-DO
@@ -240,7 +281,20 @@ public:
         this->outside_bits = new_out_bits;
     }
     
+    // -------------------------------------------------
     // Print
+    // -------------------------------------------------
+
+    friend std::ostream& operator<<(std::ostream& stream, const low_fixed_point_t& fp) {
+        auto old_precision = stream.precision();
+        auto old_flags = stream.flags();
+
+        stream << std::fixed << std::setprecision(((fp.fractional_bits + fp.outside_bits) * 3 + 9) / 10)
+           << fp.getValueF() << std::setprecision(old_precision);
+
+        stream.flags(old_flags);
+        return stream;
+    }
 };
 
 #endif

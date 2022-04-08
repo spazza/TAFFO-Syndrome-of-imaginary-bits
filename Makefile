@@ -51,6 +51,9 @@ compile_single_debug: create_out_dir
 debug_single: compile_single_debug
 	$(GDB) $(TESTOUTDIR)/$(TESTNAME)
 
+# Print a list of all the tests in the project
+# list: 
+
 # Clean all the out files produced by the compilation process
 clean:
 	rm -r $(TESTOUTDIR)

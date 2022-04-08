@@ -226,7 +226,7 @@ public:
     }
 
     fixed_point_t& operator*=(const fixed_point_t& value) override {
-        if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
+        if(integer_bits == value.getIntBits() && fractional_bits == value.getFracBits()) {
             // Save the current raw because in the next operations it is modified
             raw_t curr_raw = getRaw();
 
@@ -247,7 +247,53 @@ public:
 
     // Division
 
+    fixed_point_t& operator/(const fixed_point_t& value) const override {
+        if(integer_bits == value.getIntBits() && fractional_bits == value.getFracBits()) {
+            // Create a new fixed_point_t with extended integer range in order to contain the entire value generated for the quotient
+            fixed_point_t *new_fp = new normal_fixed_point_t(integer_bits + value.getFracBits(), fractional_bits);
+
+            // Normalize the dividend to obtain a correct fixed_point
+            raw_t intermediate = getRaw();
+            intermediate <<= value.getFracBits();
+
+            intermediate /= value.getRaw();
+
+            new_fp->setRaw(intermediate);
+
+            // Come back to the previous representation
+            new_fp->convert_to_normal_fixed_point_t(integer_bits, fractional_bits);
+
+            return *new_fp;
+        } else {
+            // TO-DO
+            return *(new normal_fixed_point_t(integer_bits, fractional_bits));
+        }
+    }
+
+    fixed_point_t& operator/=(const fixed_point_t& value) override {
+        if(integer_bits == value.getIntBits() && fractional_bits == value.getFracBits()) {
+
+            raw_t intermediate = getRaw();
+
+            convert_to_normal_fixed_point_t(integer_bits + value.getFracBits(), fractional_bits);
+
+            intermediate <<= value.getFracBits();
+
+            intermediate /= value.getRaw();
+
+            setRaw(intermediate);
+            convert_to_normal_fixed_point_t(integer_bits, fractional_bits);
+
+            return *this;
+        } else {
+            // TO-DO
+            return *this;
+        }
+    }
+
+    // -------------------------------------------------
     // Conversion
+    // -------------------------------------------------
 
     void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) override {
         if(new_frac_bits > this->fractional_bits) {
@@ -270,7 +316,20 @@ public:
         // TO-DO
     }
 
+    // -------------------------------------------------
     // Print
+    // -------------------------------------------------
+    
+    friend std::ostream& operator<<(std::ostream& stream, const normal_fixed_point_t& fp) {
+        auto old_precision = stream.precision();
+        auto old_flags = stream.flags();
+
+        stream << std::fixed << std::setprecision((fp.fractional_bits * 3 + 9) / 10)
+           << fp.getValueF() << std::setprecision(old_precision);
+
+        stream.flags(old_flags);
+        return stream;
+    }
 };
 
 #endif
