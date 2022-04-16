@@ -310,6 +310,7 @@ public:
 
     void convert_to_high_fixed_point_t(unsigned int new_int_bits, unsigned int new_out_bits) override {
         // TO-DO
+        
     }
 
     void convert_to_low_fixed_point_t(unsigned int new_frac_bits, unsigned int new_out_bits) override {
@@ -326,7 +327,7 @@ public:
 
         stream << std::fixed << std::setprecision((fp.fractional_bits * 3 + 9) / 10)
            << fp.getValueF() << std::setprecision(old_precision);
-
+            
         stream.flags(old_flags);
         return stream;
     }

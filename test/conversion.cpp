@@ -113,5 +113,4 @@ BOOST_DATA_TEST_CASE(Low_fixed_point_conversion, low_frac ^ low_out ^ low_frac_n
     }
 }
 
-
 BOOST_AUTO_TEST_SUITE_END()

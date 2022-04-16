@@ -58,51 +58,74 @@ BOOST_DATA_TEST_CASE(Normal_fixed_point_division, normal_int ^ normal_frac, INT,
     }
 }
 
+auto high_int = bdata::make({16, 16, 16});
+auto high_out = bdata::make({1, 2, 4});
 
 /**
- *  Test an example to show that the division of high_fixed_point_t may work.
+ *  Test the correct division of high_fixed_point.
  */
-BOOST_TEST_DECORATOR(*utf::description("Test the possible and correct division of the high_fixed_point_t"))
-BOOST_AUTO_TEST_CASE(High_fixed_point_division) {
-    const unsigned int INT = 12;
-    const unsigned int OUT = 2;
-    const int64_t dividend = 256;
-    const int64_t divisor = 8;
+BOOST_TEST_DECORATOR(*utf::description("Test the correct division of the high_fixed_point_t"))
+BOOST_DATA_TEST_CASE(High_fixed_point_division, high_int ^ high_out, INT, OUT) {
+    number_generator_t gen(INT, 0, OUT);
+    vector<int64_t> numbers_1 = gen.generate_high_fixed_point(NUM_VALUES);
 
-    high_fixed_point_t fp_1(INT, OUT, dividend);
-    high_fixed_point_t fp_2(INT, OUT, divisor);
-    high_fixed_point_t result(INT, OUT);
+    gen.setSeed(2);
+    vector<int64_t> numbers_2 = gen.generate_high_fixed_point(NUM_VALUES);
 
-    result = fp_1 / fp_2;
+    // Check if the divisor is zero, in that case assign the value of the previous element of the vector
+    for(int i = 0; i < NUM_VALUES; ++i) 
+        if(numbers_2[i] == 0) 
+            numbers_2[i] = numbers_2[i-1];
+        
+    for(int i = 0; i < NUM_VALUES; ++i) {
 
-    BOOST_TEST(result.getValue() == dividend / divisor);
+        high_fixed_point_t fp_1(INT, OUT, numbers_1[i]);
+        high_fixed_point_t fp_2(INT, OUT, numbers_2[i]);
+        high_fixed_point_t res (INT, OUT);
 
-    fp_1 /= fp_2;
+        res = fp_1 / fp_2;
 
-    BOOST_TEST(fp_1.getValue() == dividend / divisor);
+        BOOST_TEST(res.getValue() - numbers_1[i] / numbers_2[i] < 1e2);
+
+        fp_1 /= fp_2;
+
+        BOOST_TEST(fp_1.getValue() - numbers_1[i] / numbers_2[i] < 1e2);
+    }
 }
 
+auto low_frac = bdata::make({16, 16, 16});
+auto low_out = bdata::make({1, 2, 4});
+
 /**
- *  Test an example to show that the division of low_fixed_point_t may work.
+ *  Test the correct division of low_fixed_point.
  */
-BOOST_TEST_DECORATOR(*utf::description("Test the possible and correct division of the low_fixed_point_t"))
-BOOST_AUTO_TEST_CASE(Low_fixed_point_division) {
-    const unsigned int FRAC = 12;
-    const unsigned int OUT = 2;
-    const float dividend = 0.015625;
-    const float divisor = 0.125;
+BOOST_TEST_DECORATOR(*utf::description("Test the correct division of the low_fixed_point_t"))
+BOOST_DATA_TEST_CASE(Low_fixed_point_division, low_frac ^ low_out, FRAC, OUT) {
+    number_generator_t gen(0, FRAC, OUT);
+    vector<float> numbers_1 = gen.generate_low_fixed_point(NUM_VALUES);
 
-    low_fixed_point_t fp_1(FRAC, OUT, dividend);
-    low_fixed_point_t fp_2(FRAC, OUT, divisor);
-    low_fixed_point_t result(FRAC, OUT);
+    gen.setSeed(2);
+    vector<float> numbers_2 = gen.generate_low_fixed_point(NUM_VALUES);
 
-    result = fp_1 / fp_2;
+    // Check if the divisor is zero, in that case assign the value of the previous element of the vector
+    for(int i = 0; i < NUM_VALUES; ++i) 
+        if(numbers_2[i] == 0) 
+            numbers_2[i] = numbers_2[i-1];
+        
+    for(int i = 0; i < NUM_VALUES; ++i) {
 
-    BOOST_TEST(result.getValueF() == dividend / divisor);
+        low_fixed_point_t fp_1(FRAC, OUT, numbers_1[i]);
+        low_fixed_point_t fp_2(FRAC, OUT, numbers_2[i]);
+        low_fixed_point_t res (FRAC, OUT);
 
-    fp_1 /= fp_2;
+        res = fp_1 / fp_2;
 
-    BOOST_TEST(fp_1.getValueF() == dividend / divisor);
+        BOOST_TEST(res.getValueF() - numbers_1[i] / numbers_2[i] < 1e-5);
+
+        fp_1 /= fp_2;
+
+        BOOST_TEST(fp_1.getValueF() - numbers_1[i] / numbers_2[i] < 1e-5);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -2,10 +2,7 @@
 #define FIXED_POINT_HPP
 #define PURE 0 //for pure virtual methods
 
-#include "fixed_point_utils.hpp"
-
 #include <limits>
-//#include <cstdint>
 #include <cmath>
 #include <ostream>
 #include <iomanip>
@@ -30,7 +27,7 @@ public:
     static const int low_lim = 0;
 
     /**
-     * @brief It represents the low limit of the range that composes the raw value.
+     * @brief It represents the high limit of the range that composes the raw value.
      */
     static const int high_lim = std::numeric_limits<raw_t>::digits;
 
@@ -47,13 +44,15 @@ protected:
     unsigned int fractional_bits;
 
     /**
-     * @brief Bits that are considered out of the range in case high_fixed_point or low_fixed_point are
-     * used.
+     * @brief Bits that are considered out of the range of the raw value.
      */
     unsigned int outside_bits;
 
 private:
 
+    /**
+     * @brief Fixed point variable that represents the number.
+     */
     raw_t raw;
 
 protected:
@@ -82,10 +81,22 @@ public:
      */
     raw_t getRaw() const { return raw; }
 
+    /**
+     * @brief Get the integer bits that make up the fixed_point_t object.
+     * @return unsigned int integer bits of the fixed_point_t.
+     */
     unsigned int getIntBits() const { return integer_bits; }
 
+    /**
+     * @brief Get the fractional bits that make up the fixed_point_t object.
+     * @return unsigned int fractional bits of the fixed_point_t.
+     */
     unsigned int getFracBits() const { return fractional_bits; }
 
+    /**
+     * @brief Get the outside bits that make up the fixed_point_t object.
+     * @return unsigned int outside bits of the fixed_point_t.
+     */
     unsigned int getOutBits() const { return outside_bits; }
 
     // -------------------------------------------------
