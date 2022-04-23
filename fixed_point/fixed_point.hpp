@@ -72,6 +72,12 @@ protected:
 public:
 
     // -------------------------------------------------
+    // Cloning
+    // -------------------------------------------------
+
+    virtual fixed_point_t& clone() const = PURE;
+
+    // -------------------------------------------------
     // Getter
     // -------------------------------------------------
     
@@ -193,11 +199,7 @@ public:
     // Conversion
     // -------------------------------------------------
 
-    virtual void convert_to_normal_fixed_point_t(unsigned int new_int_bits, unsigned int new_frac_bits) = PURE;
-
-    virtual void convert_to_high_fixed_point_t(unsigned int new_int_bits, unsigned int new_out_bits) = PURE;
-
-    virtual void convert_to_low_fixed_point_t(unsigned int new_frac_bits, unsigned int new_out_bits) = PURE;
+    virtual void convert(unsigned int new_first, unsigned int new_second) = PURE;
 
     // -------------------------------------------------
     // Print

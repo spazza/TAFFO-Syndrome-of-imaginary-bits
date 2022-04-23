@@ -47,7 +47,7 @@ BOOST_DATA_TEST_CASE(Normal_fixed_point_conversion, normal_int ^ normal_frac ^ n
         normal_fixed_point_t fp(INT, FRAC, numbers[i]);
         normal_fixed_point_t fp_old = fp;
 
-        fp.convert_to_normal_fixed_point_t(INT_NEW, FRAC_NEW);
+        fp.convert(INT_NEW, FRAC_NEW);
 
         BOOST_TEST(fp.getValueF() == fp_old.getValueF());
     }
@@ -77,7 +77,7 @@ BOOST_DATA_TEST_CASE(High_fixed_point_conversion, high_int ^ high_out ^ high_int
         high_fixed_point_t fp(INT, OUT, numbers[i]);
         high_fixed_point_t fp_old = fp;
 
-        fp.convert_to_high_fixed_point_t(INT_NEW, OUT_NEW);
+        fp.convert(INT_NEW, OUT_NEW);
 
         BOOST_TEST(fp.getValue() == fp_old.getValue());
     }
@@ -107,7 +107,7 @@ BOOST_DATA_TEST_CASE(Low_fixed_point_conversion, low_frac ^ low_out ^ low_frac_n
         low_fixed_point_t fp(FRAC, OUT, numbers[i]);
         low_fixed_point_t fp_old = fp;
 
-        fp.convert_to_low_fixed_point_t(FRAC_NEW, OUT_NEW);
+        fp.convert(FRAC_NEW, OUT_NEW);
 
         BOOST_TEST(fp.getValueF() == fp_old.getValueF());
     }

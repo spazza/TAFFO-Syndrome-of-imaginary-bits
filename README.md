@@ -31,7 +31,6 @@ where testname is the name of the test to be executed.
 :green_square: Sum <br/>
 :green_square: Difference <br/>
 :green_square: Product <br/>
-:yellow_square: Division <br/>
-:red_square: Conversion among different classes <br/>
-:red_square: Operations among different classes <br/>
-:red_square: Test on multiple successive operations <br/>
+:green_square: Division <br/>
+:green_square: Print <br/>
+:yellow_square: Multiple operations test <br/>

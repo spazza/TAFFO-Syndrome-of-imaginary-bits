@@ -36,13 +36,13 @@ BOOST_DATA_TEST_CASE(Normal_fixed_point_assignment, normal_int ^ normal_frac, IN
     vector<float> numbers = gen.generate_fixed_point(NUM_VALUES);
 
     for(int i = 0; i < NUM_VALUES; ++i) {
-        fixed_point_t *fp = new normal_fixed_point_t(INT, FRAC, numbers[i]);
-        fixed_point_t *fp_new = new normal_fixed_point_t(INT, FRAC);
+        normal_fixed_point_t fp(INT, FRAC, numbers[i]);
+        normal_fixed_point_t fp_new(INT, FRAC);
         
         fp_new = fp;
 
-        BOOST_TEST(fp_new->getRaw() == fp->getRaw());
-        BOOST_TEST(fp->getValueF() == fp_new->getValueF());
+        BOOST_TEST(fp_new.getRaw() == fp.getRaw());
+        BOOST_TEST(fp.getValueF() == fp_new.getValueF());
     }
 }
 
@@ -58,13 +58,13 @@ BOOST_DATA_TEST_CASE(High_fixed_point_assignment, high_int ^ high_out, INT, OUT)
     vector<int64_t> numbers = gen.generate_high_fixed_point(NUM_VALUES);
 
     for(int i = 0; i < NUM_VALUES; ++i) {
-        fixed_point_t *fp = new high_fixed_point_t(INT, OUT, numbers[i]);
-        fixed_point_t *fp_new = new high_fixed_point_t(INT, OUT);
+        high_fixed_point_t fp(INT, OUT, numbers[i]);
+        high_fixed_point_t fp_new(INT, OUT);
         
         fp_new = fp;
 
-        BOOST_TEST(fp_new->getRaw() == fp->getRaw());
-        BOOST_TEST(fp_new->getValue() == fp->getValue());
+        BOOST_TEST(fp_new.getRaw() == fp.getRaw());
+        BOOST_TEST(fp_new.getValue() == fp.getValue());
     }
 }
 
@@ -80,13 +80,13 @@ BOOST_DATA_TEST_CASE(Low_fixed_point_assignment, low_frac ^ low_out, FRAC, OUT) 
     vector<float> numbers = gen.generate_low_fixed_point(NUM_VALUES);
 
     for(int i = 0; i < NUM_VALUES; ++i) {
-        fixed_point_t *fp = new low_fixed_point_t(FRAC, OUT, numbers[i]);
-        fixed_point_t *fp_new = new low_fixed_point_t(FRAC, OUT);
+        low_fixed_point_t fp(FRAC, OUT, numbers[i]);
+        low_fixed_point_t fp_new(FRAC, OUT);
 
         fp_new = fp;
 
-        BOOST_TEST(fp_new->getRaw() == fp->getRaw());
-        BOOST_TEST(fp_new->getValueF() == fp->getValueF());
+        BOOST_TEST(fp_new.getRaw() == fp.getRaw());
+        BOOST_TEST(fp_new.getValueF() == fp.getValueF());
     }
 }
 
