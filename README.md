@@ -7,8 +7,7 @@ Three possible representations are available:
 - `High_fixed_point_t`, representation composed by integer bits and outside bits that represent the shifting of the dot out of the range (left).
 - `Low_fixed_point_t`, representation composed by fractional bits and outside bits that represent the shifting of the dot out of the range (right).
 
-The prototype is tested on the main logical operators (` =, <, <=, >, =>, ==, !=`) and on the 4 main operations (`+, -, *, /`), however 
-it shows several limits on the division operation `/`, in particular for `high_fixed_point_t` and `low_fixed_point_t`. <br/>
+The prototype is tested on the main logical operators (` =, <, <=, >, =>, ==, !=`) and on the 4 main operations (`+, -, *, /`) <br/>
 
 Test can be performed with command: <br/>
 `make exec`
@@ -33,4 +32,4 @@ where testname is the name of the test to be executed.
 :green_square: Product <br/>
 :green_square: Division <br/>
 :green_square: Print <br/>
-:yellow_square: Multiple operations test <br/>
+:green_square: Multiple operations test <br/>
