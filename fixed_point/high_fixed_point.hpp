@@ -90,7 +90,7 @@ public:
             return *this;
         } else {
             high_fixed_point_t temp = dynamic_cast<high_fixed_point_t&>(value.clone());
-            temp.convert(this->integer_bits, this->fractional_bits);
+            temp.convert(this->integer_bits, this->outside_bits);
 
             return *this = temp;
         }
@@ -116,8 +116,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() < value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this < temp;
         }
     }
 
@@ -125,8 +127,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() > value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this > temp;
         }
     }
 
@@ -134,8 +138,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() == value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this == temp;
         }
     }
 
@@ -143,8 +149,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->outside_bits == value.getOutBits()) {
             return this->getRaw() != value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this != temp;
         }
     }
 
@@ -152,8 +160,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->outside_bits == value.getOutBits()) {
             return !(*this > value);
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this <= temp;
         }
     }
 
@@ -161,8 +171,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->outside_bits == value.getOutBits()) {
             return !(*this < value);
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this >= temp;
         }
     }
 
@@ -178,8 +190,10 @@ public:
             new_fp->setRaw(this->getRaw() + value.getRaw());
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new high_fixed_point_t(integer_bits, outside_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this + temp;
         }
     }
 
@@ -188,8 +202,10 @@ public:
             setRaw(getRaw() + value.getRaw());
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this += temp;
         }
     }
 
@@ -201,8 +217,10 @@ public:
             new_fp->setRaw(this->getRaw() - value.getRaw());
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new high_fixed_point_t(integer_bits, outside_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this - temp;
         }
     }
 
@@ -211,8 +229,10 @@ public:
             setRaw(getRaw() - value.getRaw());
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this -= temp;
         }
     }
 
@@ -229,8 +249,10 @@ public:
             new_fp->convert(integer_bits, outside_bits);
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new high_fixed_point_t(integer_bits, outside_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this * temp;
         }
     }
 
@@ -249,8 +271,10 @@ public:
             convert(value.getIntBits(), value.getOutBits());
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this *= temp;
         }
     }
 
@@ -269,8 +293,10 @@ public:
 
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new high_fixed_point_t(integer_bits, outside_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this / temp;
         }
     }
 
@@ -287,8 +313,10 @@ public:
             
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->outside_bits);
+
+            return *this /= temp;
         }
     }
 

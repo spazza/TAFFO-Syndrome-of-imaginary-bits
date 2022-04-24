@@ -132,11 +132,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() < value.getRaw();
         } else {
-            //auto temp = value;
-            //temp.convert(this->integer_bits, this->fractional_bits);
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
 
-            //return *this > temp;
-            return false;
+            return *this < temp;
         }
     }
 
@@ -144,8 +143,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() > value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this > temp;
         }
     }
 
@@ -153,8 +154,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() == value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this == temp;
         }
     }
 
@@ -162,8 +165,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return this->getRaw() != value.getRaw();
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this != temp;
         }
     }
 
@@ -171,8 +176,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return !(*this > value);
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this <= temp;
         }
     }
 
@@ -180,8 +187,10 @@ public:
         if(this->integer_bits == value.getIntBits() && this->fractional_bits == value.getFracBits()) {
             return !(*this < value);
         } else {
-            // TO-DO
-            return false;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this >= temp;
         }
     }
     
@@ -197,8 +206,10 @@ public:
             new_fp->setRaw(this->getRaw() + value.getRaw());
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new normal_fixed_point_t(integer_bits, fractional_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this + temp;
         }
     }
 
@@ -207,8 +218,10 @@ public:
             setRaw(getRaw() + value.getRaw());
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this += temp;
         }
     }
 
@@ -220,8 +233,10 @@ public:
             new_fp->setRaw(this->getRaw() - value.getRaw());
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new normal_fixed_point_t(integer_bits, fractional_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this - temp;
         }
     }
 
@@ -230,8 +245,10 @@ public:
             setRaw(getRaw() - value.getRaw());
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this -= temp;
         }
     }
     
@@ -249,8 +266,10 @@ public:
 
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new normal_fixed_point_t(integer_bits, fractional_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this * temp;
         }
     }
 
@@ -269,8 +288,10 @@ public:
             convert(value.getIntBits(), value.getFracBits());
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this *= temp;
         }
     }
 
@@ -294,8 +315,10 @@ public:
 
             return *new_fp;
         } else {
-            // TO-DO
-            return *(new normal_fixed_point_t(integer_bits, fractional_bits));
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this / temp;
         }
     }
 
@@ -315,8 +338,10 @@ public:
 
             return *this;
         } else {
-            // TO-DO
-            return *this;
+            fixed_point_t& temp = value.clone();
+            temp.convert(this->integer_bits, this->fractional_bits);
+
+            return *this /= temp;
         }
     }
 
